@@ -7,7 +7,8 @@
 
 <script>
 var audioPlayer = new Audio();
-var library = [];
+var baseURL = "http://www.chilltec.net:8000"
+var songs = [];
 var artists = []
 export default {
   name: 'tempoWeb',
@@ -23,28 +24,31 @@ export default {
       audioPlayer.load();
       audioPlayer.play();
     },
+    PlayRandomSongByArtist(artist){
+      src = baseURL + "/getRandomSongByArtist/" + artist 
+    },
     control_play(){
       audioPlayer.play();
     },
     control_pause(){
       audioPlayer.pause();
     },
-    getLibrary(cb){
-      this.$http.get("http://www.chilltec.net:8000/getLibrary").then(response => {
-        library = response.body;
+    getSongs(cb){
+      this.$http.get(baseURL + "/getSongs").then(response => {
+        songs = response.body;
         cb();
       }, response => { console.log("ERROR: " + response.body); });
     },
     getArtists(cb){
-      this.$http.get("http://www.chilltec.net:8000/getArtists").then(response => {
+      this.$http.get(baseURL + "/getArtists").then(response => {
         artists = response.body;
         console.log(artists);
         cb();
       }, response => { console.log("ERROR: " + response.body); });
     },
     writeArtists(){
-      if(library === []){
-        console.log("Error: Calling writeArtists() before getLibrary()");
+      if(songs === []){
+        console.log("Error: Calling writeArtists() before getSongs()");
         return;
       }
       document.getElementById("typeLable").innerHTML = "Artists";
@@ -52,11 +56,14 @@ export default {
       console.log("Num artists: " + numArtists);
       var html = ""
       for(var i = 0; i < numArtists; i++){
+        var randomLink = baseURL + "/getRandomSongByArtist/" + artists[i].id.toString();
         if(i % 12 == 0){
           html += '<div class="row">';
         }
         html += '<div class="col-xl-1">' +
-          artists[i].artist.toString() + '</div>';
+          '<a onClick="playRandomSongByArtist(' +
+          artists[i].artist.toString() + ')">' +
+          artists[i].artist.toString() + '</a></div>';
       }
       document.getElementById("artistGrid").innerHTML = html;
       console.log(html);
@@ -64,13 +71,14 @@ export default {
   },
   created: function() {
     var tempoWeb = this;
-    tempoWeb.getLibrary(function (){
+    tempoWeb.getSongs(function (){
       tempoWeb.getArtists(function (){
         tempoWeb.writeArtists();
       })
     })
   }
 }
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -29,6 +29,7 @@
 
     </header>
     <router-view/>
+    <a onClick="test()" href="">Test</a>
   </div>
 </template>
 
