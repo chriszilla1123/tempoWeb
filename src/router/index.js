@@ -12,10 +12,10 @@ export default new Router({
       name: 'tempoWeb',
       component: tempoWeb
     },
-    {
+    /*{
       path: '/about',
       name: 'about',
       component: about
-    }
+    }*/
   ]
 })
