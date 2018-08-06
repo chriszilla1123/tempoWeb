@@ -122,7 +122,8 @@ export default {
         if(i % width === 0){
           html += '<div class="row">';
         }
-        html += '<div class="col-sm artistLink">' +
+        html += '<div class="col-sm artistLink" tag=' +
+        artists[i].id + '>' +
           artists[i].artist.toString() + '</div>';
       }
       html += '</div>';
@@ -144,6 +145,14 @@ export default {
       })
     })
     document.getElementById("playRandom").onclick = function(){tempoWeb.playRandom();};
+
+    var artistLinks = document.getElementsByClassName("artistLink"); //TODO
+    for(var i=0; i < artistLinks.length; i++){
+      var artistLink = artistLinks[i];
+      artistLink.addEventListener('click', function() {
+        console.log("Got here!");
+      });
+    }
 
     //Player
     var audioHolder = document.querySelector('audio');
@@ -167,7 +176,6 @@ export default {
       });
 
     var barLoc = timerHolder.getBoundingClientRect();
-    console.log(barLoc);
     document.onclick = function(e) {
       if(e.x >= barLoc.left && e.x <= barLoc.right && e.y >= barLoc.top 
         && e.y <= barLoc.bottom && !audioPlayer.paused) {
