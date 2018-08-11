@@ -1,4 +1,4 @@
-.artistLink {
+.artistLink, .albumLink {
     border-style: solid;
     margin-top: 10px;
     color: green;
@@ -16,7 +16,7 @@
     text-shadow: 1px 1px 0px black;
 }
 .controls {
-    //visibility: hidden;
+    visibility: hidden;
     opacity: 0.5;
     width: 400px;
     border-radius: 10px;
