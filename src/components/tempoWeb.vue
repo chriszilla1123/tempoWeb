@@ -35,7 +35,10 @@
 
 <script>
 var audioPlayer = new Audio();
-var baseURL = "http://www.chilltec.net:8000"
+var baseURL = "http://www.chilltec.net:8000";
+var songSet = []; /*List of songs in the current playing set*/
+var nextSong = -1; /*ID of next song to be played from the current playing set*/
+var browsingSongSet = []; /*List of songs in the current browsing set*/
 
 /*Stores the 'artists' table from the database. Structure:
   [id], [artist], [numSongs], [numAlbums], [picture]*/
@@ -60,12 +63,38 @@ export default {
 
     },
     playSongById(songID){
+      //Used when clicking a song link
+      var songSetIndex = songSet.indexOf(parseInt(songID));
+      if(songSet.indexOf(parseInt(songSetIndex + 1)) !== -1){ 
+        nextSong = songSet[songSetIndex + 1]; //songID, if it exists
+      }
+      else{
+        nextSong = -1; //Otherwise, set to -1
+      }
       audioPlayer.pause();
       audioPlayer.src = baseURL + "/getSongById/" + songID;
       audioPlayer.load();
       audioPlayer.play();
     },
-    PlayRandomSongByArtist(artist){
+    playNextSong(){
+      var toPlay = nextSong;
+      console.log("Playing: " + toPlay);
+      var songSetIndex = songSet.indexOf(parseInt(toPlay));
+      if(toPlay !== -1){
+        if(songSet.indexOf(parseInt(songSetIndex + 1)) !== -1){ 
+          nextSong = songSet[songSetIndex + 1]; //songID, if it exists
+        }
+        else{
+          nextSong = -1; //Otherwise, set to -1
+        }
+        console.log("Next up: " + nextSong);
+        this.playSong(baseURL + "/getSongById/" + toPlay);
+      }
+      else{
+        console.log("Hit end of queue");
+      }
+    },
+    playRandomSongByArtist(artist){
       src = baseURL + "/getRandomSongByArtist/" + artist 
     },
     control_play(play_button){
@@ -122,7 +151,7 @@ export default {
         }, response_al => { console.log("Error: " + response_al.body); });
       }, response_ar => { console.log("Error: " + response_ar.body); });
     },
-    writeArtists(cb, width=4){
+    writeArtists(cb, width=8){
       /*Writes information for all artists on the main page. 'Width' denotes
       the maximum number of artists to display in one row on larger screens.*/
       if(songsDB === []){
@@ -147,7 +176,7 @@ export default {
       document.getElementById("main").innerHTML = html;
       cb();
     },
-    writeArtistPage(artistID, cb, width=4){
+    writeArtistPage(artistID, cb, width=8){
       /*Writes information for a single artist, givin its artist ID.
       Includes albums, songs, and additional information*/
       var albums = [];
@@ -175,25 +204,30 @@ export default {
       document.getElementById('main').innerHTML = html;
       cb()
     },
-    writeAlbumPage(albumID, cb, width=4) {
+    writeAlbumPage(albumID, artistID, cb, width=2) {
     //Writes all songs in album
+      songSet = [] //clear the songset to be rebuilt.
       var songs = [];
       if(albumID === 0) {
         //For "All Songs" link
-        var artist = ""; //TODO: Get artist name and write all songs by that artist
         for(var i=0; i < songsDB.length; i++){
-
+          if(songsDB[i].artist === artistID){
+            songs.push(songsDB[i])
+            browsingSongSet.push(songsDB[i].id);
+          }
         }
-        document.getElementById("typeLable").innerHTML = songs[0].artist;
+        document.getElementById("typeLable").innerHTML = artistsDB[artistID-1].artist;
       }
       else{
         //For individual album links
         for(var i=0; i < songsDB.length; i++){
           if(songsDB[i].album == albumID) {
             songs.push(songsDB[i]);
+            browsingSongSet.push(songsDB[i].id);
           }
         }
         document.getElementById("typeLable").innerHTML = albumsDB[albumID - 1].album;
+        console.log("songSet: " + songSet);
       }
       var html = '<div class="container">';
       for(var i=0; i < songs.length; i++){
@@ -216,7 +250,7 @@ export default {
       this.playSong(src);
     },
     createArtistListeners(){
-      var tempoWeb = this; //Holds 'tempoWeb' location through the callback
+      var tempoWeb = this; //Holds l'tempoWeb' location through the callback
       var artistLinks = document.getElementsByClassName("artistLink");
       for(var i=0; i < artistLinks.length; i++){
         var artistLink = artistLinks[i];
@@ -229,13 +263,17 @@ export default {
     createAlbumListeners(){
       var tempoWeb = this;
       var albumLinks = document.getElementsByClassName("albumLink");
-      for(var i=0; i < albumLinks.length; i++){
-        var albumLink = albumLinks[i]
-        albumLink.addEventListener('click', function() {
-          var albumID = this.attributes.tag.nodeValue.split('AlID_')[1];
-          tempoWeb.writeAlbumPage(albumID, tempoWeb.createSongListeners);
-        });
-      }
+      var lastAlbum = albumLinks[albumLinks.length - 1].attributes.tag.nodeValue.split('AlID_')[1];
+      this.$http.get(baseURL + "/getArtistByAlbum/" + lastAlbum).then(response => {
+        var artistID = parseInt(response.body);
+        for(var i=0; i < albumLinks.length; i++){
+          var albumLink = albumLinks[i]
+          albumLink.addEventListener('click', function() {
+            var albumID = parseInt(this.attributes.tag.nodeValue.split('AlID_')[1]);
+            tempoWeb.writeAlbumPage(albumID, artistID, tempoWeb.createSongListeners);
+          });
+        }
+      }, response => { console.log("Error: " + response.body);});
     },
     createSongListeners(){
       var tempoWeb = this;
@@ -243,6 +281,7 @@ export default {
       for(var i=0; i < songLinks.length; i++) {
         var songLink = songLinks[i];
         songLink.addEventListener('click', function() {
+          songSet = browsingSongSet;
           var songId = this.attributes.tag.nodeValue.split('SoID_')[1];
           tempoWeb.playSongById(songId);
         });
@@ -259,6 +298,10 @@ export default {
     document.getElementById("home").onclick = function(){
       tempoWeb.writeArtists(tempoWeb.createArtistListeners);
     };
+
+    audioPlayer.addEventListener('ended', function(){
+      tempoWeb.playNextSong();
+    });
     
     //Player
     var audioHolder = document.querySelector('audio');
