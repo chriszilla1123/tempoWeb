@@ -12,8 +12,10 @@
           <div id="playerHolder">
             <audio controls></audio>
             <div class="controls">
+              <button class="back control-button" data-icon="B" aria-label="rewind"></button>
               <button class="play control-button" data-icon="P" aria-label="play pause toggle"></button>
               <button class="stop control-button" data-icon="S" aria-label="stop"></button>
+              <button class="next control-button" data-icon="F" aria-label="fast forward"></button>
               <div class="timer">
                 <div></div>
                 <span aria-label="timer">00:00</span>
@@ -37,7 +39,9 @@
 var audioPlayer = new Audio();
 var baseURL = "http://www.chilltec.net:8000";
 var songSet = []; /*List of songs in the current playing set*/
+var curSong = -1; /*ID of the currently playing song*/
 var nextSong = -1; /*ID of next song to be played from the current playing set*/
+var prevSet = []; /*Stores the last played songs for the 'back' button*/
 var browsingSongSet = []; /*List of songs in the current browsing set*/
 
 /*Stores the 'artists' table from the database. Structure:
@@ -65,35 +69,21 @@ export default {
     playSongById(songID){
       //Used when clicking a song link
       var songSetIndex = songSet.indexOf(parseInt(songID));
-      if(songSet.indexOf(parseInt(songSetIndex + 1)) !== -1){ 
+      if(songSet.length >= (songSetIndex + 1)){ 
         nextSong = songSet[songSetIndex + 1]; //songID, if it exists
       }
       else{
         nextSong = -1; //Otherwise, set to -1
       }
+      console.log("Next song: " + nextSong);
       audioPlayer.pause();
       audioPlayer.src = baseURL + "/getSongById/" + songID;
       audioPlayer.load();
       audioPlayer.play();
+      console.log("Playing: " + songID);
+      curSong = parseInt(songID);
     },
-    playNextSong(){
-      var toPlay = nextSong;
-      console.log("Playing: " + toPlay);
-      var songSetIndex = songSet.indexOf(parseInt(toPlay));
-      if(toPlay !== -1){
-        if(songSet.indexOf(parseInt(songSetIndex + 1)) !== -1){ 
-          nextSong = songSet[songSetIndex + 1]; //songID, if it exists
-        }
-        else{
-          nextSong = -1; //Otherwise, set to -1
-        }
-        console.log("Next up: " + nextSong);
-        this.playSong(baseURL + "/getSongById/" + toPlay);
-      }
-      else{
-        console.log("Hit end of queue");
-      }
-    },
+    
     playRandomSongByArtist(artist){
       src = baseURL + "/getRandomSongByArtist/" + artist 
     },
@@ -111,7 +101,42 @@ export default {
       play_button.setAttribute('data-icon', 'P');
       audioPlayer.pause();
       audioPlayer.currentTime = 0;
-
+    },
+    control_next(){
+      var toPlay = nextSong;
+      console.log("Playing: " + toPlay);
+      var songSetIndex = songSet.indexOf(parseInt(toPlay));
+      if(toPlay !== -1){
+        if(songSet.length >= (songSetIndex + 1)){ 
+          nextSong = songSet[songSetIndex + 1]; //songID, if it exists
+        }
+        else{
+          nextSong = -1; //Otherwise, set to -1
+        }
+        console.log("Next up: " + nextSong);
+        this.playSong(baseURL + "/getSongById/" + toPlay);
+        curSong = parseInt(toPlay);
+      }
+      else{
+        console.log("Hit end of queue");
+      }
+    },
+    control_back(){
+      if(audioPlayer.currentTime >= 3){
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+        audioPlayer.play();
+        return;
+      }
+      var songSetIndex = songSet.indexOf(parseInt(curSong));
+      if(songSetIndex - 1 >= 0 && songSetIndex - 1 <= songSet.length){
+        nextSong = curSong;
+        var toPlay = songSet[songSetIndex - 1];
+        this.playSong(baseURL + "/getSongById/" + toPlay);
+        curSong = parseInt(toPlay);
+        console.log("Playing: " + toPlay);
+        console.log("Up next: " + nextSong);
+      }
     },
     updatePlayerTime(timeHolder, timeBar, timer){
       var min = Math.floor(audioPlayer.currentTime / 60); //Min/Sec set by user
@@ -169,7 +194,7 @@ export default {
           html += '<div class="row">';
         }
         html += '<div class="col-sm artistLink" tag=ArID_' +
-        artistsDB[i].id + '>' +
+          artistsDB[i].id + '>' +
           artistsDB[i].artist.toString() + '</div>';
       }
       html += '</div>';
@@ -204,10 +229,10 @@ export default {
       document.getElementById('main').innerHTML = html;
       cb()
     },
-    writeAlbumPage(albumID, artistID, cb, width=2) {
+    writeAlbumPage(albumID, artistID, cb, width=1) {
     //Writes all songs in album
-      songSet = [] //clear the songset to be rebuilt.
       var songs = [];
+      // browsingSongSet = [] //Clear the browsing set
       if(albumID === 0) {
         //For "All Songs" link
         for(var i=0; i < songsDB.length; i++){
@@ -227,7 +252,6 @@ export default {
           }
         }
         document.getElementById("typeLable").innerHTML = albumsDB[albumID - 1].album;
-        console.log("songSet: " + songSet);
       }
       var html = '<div class="container">';
       for(var i=0; i < songs.length; i++){
@@ -250,7 +274,7 @@ export default {
       this.playSong(src);
     },
     createArtistListeners(){
-      var tempoWeb = this; //Holds l'tempoWeb' location through the callback
+      var tempoWeb = this; //Holds 'tempoWeb' location through the callback
       var artistLinks = document.getElementsByClassName("artistLink");
       for(var i=0; i < artistLinks.length; i++){
         var artistLink = artistLinks[i];
@@ -281,7 +305,8 @@ export default {
       for(var i=0; i < songLinks.length; i++) {
         var songLink = songLinks[i];
         songLink.addEventListener('click', function() {
-          songSet = browsingSongSet;
+          console.log("Got here");
+          songSet = browsingSongSet.slice();
           var songId = this.attributes.tag.nodeValue.split('SoID_')[1];
           tempoWeb.playSongById(songId);
         });
@@ -300,7 +325,7 @@ export default {
     };
 
     audioPlayer.addEventListener('ended', function(){
-      tempoWeb.playNextSong();
+      tempoWeb.control_next();
     });
     
     //Player
@@ -308,8 +333,8 @@ export default {
     var controller = document.querySelector('.controls');
     var controller_play = document.querySelector('.play');
     var controller_stop = document.querySelector('.stop');
-    //var controller_next = document.querySelector('.next'); TODO: Implement
-    //var controller_back = document.querySelector('.back');
+    var controller_next = document.querySelector('.next');
+    var controller_back = document.querySelector('.back');
     var timerHolder = document.querySelector('.timer');
     var timer = document.querySelector('.timer span');
     var timerBar = document.querySelector('.timer div');
@@ -317,8 +342,10 @@ export default {
     audioHolder.removeAttribute('controls');
     controller.style.visibility = 'visible';
 
-    controller_play.addEventListener('click', function (){tempoWeb.control_play(controller_play);});
-    controller_stop.addEventListener('click', function (){tempoWeb.control_stop(controller_play);});
+    controller_play.addEventListener('click', function(){tempoWeb.control_play(controller_play);});
+    controller_stop.addEventListener('click', function(){tempoWeb.control_stop(controller_play);});
+    controller_next.addEventListener('click', function() {tempoWeb.control_next();});
+    controller_back.addEventListener('click', function() {tempoWeb.control_back();});
     audioPlayer.addEventListener('timeupdate', function(){
         tempoWeb.updatePlayerTime(timerHolder, timerBar, timer);
       });
