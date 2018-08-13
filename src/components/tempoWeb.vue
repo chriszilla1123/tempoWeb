@@ -8,7 +8,6 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav mr-auto">
-          <button id="playRandom">Play Random</button>
           <div id="playerHolder">
             <audio controls></audio>
             <div class="controls">
@@ -176,7 +175,7 @@ export default {
         }, response_al => { console.log("Error: " + response_al.body); });
       }, response_ar => { console.log("Error: " + response_ar.body); });
     },
-    writeArtists(cb, width=8){
+    writeArtists(cb){
       /*Writes information for all artists on the main page. 'Width' denotes
       the maximum number of artists to display in one row on larger screens.*/
       if(songsDB === []){
@@ -185,20 +184,18 @@ export default {
       }
       document.getElementById("typeLable").innerHTML = "Artists";
       var numArtists = artistsDB.length;
-      var html = '<div class="container">'
-      html += '<div class="row"><div class="col-sm artistLink" tag="ArID_0">';
-      html += 'All Artists</div>'
-      html += '<div class="col-sm artistLink" tag="ArID_-1">All Songs</div>';
+
+      //Artist Links
+      var html = '<div class="container"><div class="row" id="artistHeader">'
+        + '<div class="col artistLink">Artist</div></div>'
+        + '<div class="row"><div class="col-sm artistLink" tag="ArID_0">'
+        + 'All Artists</div></div>'
+        + '<div class="row"><div class="col-sm artistLink" tag="ArID_-1">All Songs</div>'
+        + '</div>';
       for(var i = 0; i < numArtists; i++){
-        if((i+2) % width === 0 && i !== 0){
-          html += '</div>';
-        }
-        if((i+2) % width === 0 && i !== 0){
-          html += '<div class="row">';
-        }
-        html += '<div class="col-sm artistLink" tag=ArID_' +
+        html += '<div class="row"><div class="col-sm artistLink" tag=ArID_' +
           artistsDB[i].id + '>' +
-          artistsDB[i].artist.toString() + '</div>';
+          artistsDB[i].artist.toString() + '</div></div>';
       }
       html += '</div>';
       document.getElementById("main").innerHTML = html;
@@ -232,13 +229,15 @@ export default {
       document.getElementById('main').innerHTML = html;
       cb()
     },
-    writeAlbumPage(albumID, artistID, cb, width=1) {
+    writeAlbumPage(albumID, artistID, cb) {
     //Writes all songs in album
       var songs = [];
       // browsingSongSet = [] //Clear the browsing set
       if(albumID === 0 && artistID === 0) {
-        //For "All Songs" from main page. Shows entire catelog
-        songs = songsDB.slice();
+        for(var i=0; i < songsDB.length; i++){
+          songs.push(songsDB[i]);
+          browsingSongSet.push(songsDB[i].id);
+        }
       }
       else if(albumID === 0) {
         //For "All Songs" from artist link
@@ -260,19 +259,28 @@ export default {
         }
         document.getElementById("typeLable").innerHTML = albumsDB[albumID - 1].album;
       }
-      var html = '<div class="container">';
+      //Song Links
+      var html = '<div class="container">'
+        + '<div class="row" id="songHeader">'
+        + '<div class="col-1"></div><div class="col">Title</div><div class="col">Artist</div>'
+        + '<div class="col">Album</div></div>';
       for(var i=0; i < songs.length; i++){
-        if(i % width === 0 && i !== 0){
-          html += '</div>';
-        }
-        if(i % width === 0){
-          html += '<div class="row">';
-        }
-        html += '<div class="col-sm songLink" tag=SoID_' +
-        songs[i].id + '>' +
-          songs[i].title.toString() + '</div>';
+        var onSong = (i+1).toString();
+        var songTitle = songs[i].title.toString();
+        var onArtistID = songs[i].artist;
+        var onAlbumID = songs[i].album;
+        var artist = artistsDB[onArtistID-1].artist;
+        var album = albumsDB[onAlbumID-1].album;
+        var test = 1;
+        html += '<div class="row songLink align-middle" tag="SoID_' + songs[i].id + '">' 
+          + '<div class="col-1">' + onSong + '</div>'
+          + '<div class="col">' + songTitle + '</div>'
+          + '<div class="col">' + artist + '</div>'
+          + '<div class="col">' + album + '</div>'
+          + '</div>';
       }
       html += '</div>';
+      //End Song Links
       document.getElementById('main').innerHTML = html;
       cb();
     },
@@ -287,8 +295,9 @@ export default {
         var artistLink = artistLinks[i];
         artistLink.addEventListener('click', function() {
           var artistID = this.attributes.tag.nodeValue.split('ArID_')[1];
-          console.log("ArtistID: " + artistID);
           if(artistID === '-1'){
+            //All songs entire catelog
+            document.getElementById("typeLable").innerHTML = "All Songs";
             tempoWeb.writeAlbumPage(0, 0,  tempoWeb.createSongListeners);
           }
           else{
@@ -332,7 +341,6 @@ export default {
       tempoWeb.writeArtists(tempoWeb.createArtistListeners);
       //tempoWeb.writeArtistPage(39);
     });
-    document.getElementById("playRandom").onclick = function(){tempoWeb.playRandom();};
     document.getElementById("home").onclick = function(){
       tempoWeb.writeArtists(tempoWeb.createArtistListeners);
     };

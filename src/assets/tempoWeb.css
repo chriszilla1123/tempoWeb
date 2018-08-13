@@ -1,5 +1,7 @@
 html {
     --dark-background: #262626;
+    --dark-foreground: #302830;
+    --dark-foreground-border: #242424;
     --light-text: #ccc;
 }
 body {
@@ -7,12 +9,29 @@ body {
 }
 .artistLink, .albumLink {
     border-style: solid;
+    border-color:  #666;
     margin-top: 10px;
-    color: green;
-  }
-.songLink {
     color: var(--light-text);
-    //background-color: #262626;
+  }
+.songLink, #songHeader {
+    color: var(--light-text);
+    background-color: var(--dark-foreground);
+    margin-top: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--dark-foreground-border);
+    font-size: .9em;
+    text-align: left;
+}
+.artistLink, #artistHeader {
+    color: var(--light-text);
+    background-color: var(--dark-foreground);
+    margin-top: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--dark-foreground-border);
+    font-size: 1.2em;
+    text-align: left;
 }
 @font-face {
     font-family: 'HeydingsControlsRegular';
