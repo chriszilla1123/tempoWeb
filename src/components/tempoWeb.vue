@@ -186,11 +186,14 @@ export default {
       document.getElementById("typeLable").innerHTML = "Artists";
       var numArtists = artistsDB.length;
       var html = '<div class="container">'
+      html += '<div class="row"><div class="col-sm artistLink" tag="ArID_0">';
+      html += 'All Artists</div>'
+      html += '<div class="col-sm artistLink" tag="ArID_-1">All Songs</div>';
       for(var i = 0; i < numArtists; i++){
-        if(i % width === 0 && i !== 0){
+        if((i+2) % width === 0 && i !== 0){
           html += '</div>';
         }
-        if(i % width === 0){
+        if((i+2) % width === 0 && i !== 0){
           html += '<div class="row">';
         }
         html += '<div class="col-sm artistLink" tag=ArID_' +
@@ -233,8 +236,12 @@ export default {
     //Writes all songs in album
       var songs = [];
       // browsingSongSet = [] //Clear the browsing set
-      if(albumID === 0) {
-        //For "All Songs" link
+      if(albumID === 0 && artistID === 0) {
+        //For "All Songs" from main page. Shows entire catelog
+        songs = songsDB.slice();
+      }
+      else if(albumID === 0) {
+        //For "All Songs" from artist link
         for(var i=0; i < songsDB.length; i++){
           if(songsDB[i].artist === artistID){
             songs.push(songsDB[i])
@@ -280,7 +287,13 @@ export default {
         var artistLink = artistLinks[i];
         artistLink.addEventListener('click', function() {
           var artistID = this.attributes.tag.nodeValue.split('ArID_')[1];
-          tempoWeb.writeArtistPage(artistID, tempoWeb.createAlbumListeners);
+          console.log("ArtistID: " + artistID);
+          if(artistID === '-1'){
+            tempoWeb.writeAlbumPage(0, 0,  tempoWeb.createSongListeners);
+          }
+          else{
+            tempoWeb.writeArtistPage(artistID, tempoWeb.createAlbumListeners);
+          }
         });
       }
     },

@@ -1,8 +1,19 @@
+html {
+    --dark-background: #262626;
+    --light-text: #ccc;
+}
+body {
+    background-color: var(--dark-background);
+}
 .artistLink, .albumLink {
     border-style: solid;
     margin-top: 10px;
     color: green;
   }
+.songLink {
+    color: var(--light-text);
+    //background-color: #262626;
+}
 @font-face {
     font-family: 'HeydingsControlsRegular';
     src: url('heydings_controls.ttf');
@@ -56,3 +67,7 @@
     z-index: 3; 
     left: 19px;
   }
+  
+  #typeLable {
+    color: var(--light-text);
+}
