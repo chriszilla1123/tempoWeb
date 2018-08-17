@@ -1,40 +1,9 @@
-<template>
-  <div id="main-page">
-    <!-- Navber / Player -->
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-      <div class="navbar-brand" id="home">Tempo Web</div>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav mr-auto">
-          <div id="playerHolder">
-            <audio controls></audio>
-            <div class="controls">
-              <button class="back control-button" data-icon="B" aria-label="rewind"></button>
-              <button class="play control-button" data-icon="P" aria-label="play pause toggle"></button>
-              <button class="stop control-button" data-icon="S" aria-label="stop"></button>
-              <button class="next control-button" data-icon="F" aria-label="fast forward"></button>
-              <div class="timer">
-                <div></div>
-                <span aria-label="timer">00:00</span>
-              </div>
-            </div>
-          </div>
-        </ul>
-        <!--<form class="form-inline mt-2 mt-md-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>-->
-      </div>
-    </nav>
-    <!-- End Nav/Player -->
-    <h1 id="typeLable">Artists</h1>
-    <div id="main"></div>
-  </div>
-</template>
+<template src="../assets/tempoWeb.html"></template>
 
 <script>
+//import 'player.js';
+//player myplayer;
+
 var audioPlayer = new Audio();
 var baseURL = "http://www.chilltec.net:8000";
 var songSet = []; /*List of songs in the current playing set*/
@@ -59,6 +28,8 @@ export default {
   name: 'tempoWeb',
   methods: {
     playSong(src){
+      //Takes a full src path to an audio resource and plays it.
+      //Should only be used by playSongByID function.
       audioPlayer.pause();
       audioPlayer.src = src;
       audioPlayer.load();
@@ -81,101 +52,49 @@ export default {
       audioPlayer.play();
       console.log("Playing: " + songID);
       curSong = parseInt(songID);
+      this.writeCurrentPlayingInfo(songID);
     },
-    
-    playRandomSongByArtist(artist){
-      src = baseURL + "/getRandomSongByArtist/" + artist 
-    },
-    control_play(play_button){
-      if(audioPlayer.paused) {
-        play_button.setAttribute('data-icon', 'u');
-        audioPlayer.play();
-      }
-      else{
-        play_button.setAttribute('data-icon', 'P');
-        audioPlayer.pause();
-      }
-    },
-    control_stop(play_button){
-      play_button.setAttribute('data-icon', 'P');
-      audioPlayer.pause();
-      audioPlayer.currentTime = 0;
-    },
-    control_next(){
-      var toPlay = nextSong;
-      console.log("Playing: " + toPlay);
-      var songSetIndex = songSet.indexOf(parseInt(toPlay));
-      if(toPlay !== -1){
-        if(songSet.length >= (songSetIndex + 1)){ 
-          nextSong = songSet[songSetIndex + 1]; //songID, if it exists
+    writeCurrentPlayingInfo(songID){
+      var albumID = -1;
+      var artistID = -1;
+      var song = ""
+      var album = "";
+      var artist = "";
+
+      if(songsDB.length === 0) return;
+      if(songID < 1 || songID > songsDB.length) return;
+      for(var i=0; i < songsDB.length; i++){
+        if(songsDB[i].id == songID) {
+          albumID = songsDB[i].album;
+          artistID = songsDB[i].artist;
+          break;
         }
-        else{
-          nextSong = -1; //Otherwise, set to -1
+      }
+      for(var i=0; i < songsDB.length; i++){
+        if(songsDB[i].id == songID){
+          song = songsDB[i].title;
+          break;
         }
-        console.log("Next up: " + nextSong);
-        this.playSong(baseURL + "/getSongById/" + toPlay);
-        curSong = parseInt(toPlay);
       }
-      else{
-        console.log("Hit end of queue");
+      if(albumID === -1 || artistID === -1) return;
+      for(var i=0; i < albumsDB.length; i++){
+        if(albumsDB[i].id == albumID){
+          album = albumsDB[i].album;
+          break;
+        }
       }
+      for(var i=0; i < artistsDB.length; i++){
+        if(artistsDB[i].id == artistID){
+          artist = artistsDB[i].artist;
+          break;
+        }
+      }
+      if(song === "" ||album === "" || artist === "") return;
+      document.getElementById('cur-song').innerHTML = song;
+      document.getElementById('cur-album').innerHTML = album;
+      document.getElementById('cur-artist').innerHTML = artist;
     },
-    control_back(){
-      if(audioPlayer.currentTime >= 3){
-        audioPlayer.pause();
-        audioPlayer.currentTime = 0;
-        audioPlayer.play();
-        return;
-      }
-      var songSetIndex = songSet.indexOf(parseInt(curSong));
-      if(songSetIndex - 1 >= 0 && songSetIndex - 1 <= songSet.length){
-        nextSong = curSong;
-        var toPlay = songSet[songSetIndex - 1];
-        this.playSong(baseURL + "/getSongById/" + toPlay);
-        curSong = parseInt(toPlay);
-        console.log("Playing: " + toPlay);
-        console.log("Up next: " + nextSong);
-      }
-    },
-    updatePlayerTime(timeHolder, timeBar, timer){
-      var min = Math.floor(audioPlayer.currentTime / 60); //Min/Sec set by user
-      var sec = Math.floor(audioPlayer.currentTime - min * 60);
-      var newMin;     //To build the updated display
-      var newSec;
-      var newTime;    //To update the display
-      var barLength;  //The time bar
-      if(min < 10){
-        newMin = '0' + min;
-      }
-      else{
-        newMin = min;
-      }
-      if(sec < 10){
-        newSec = '0' + sec;
-      }
-      else{
-        newSec = sec;
-      }
-      newTime = newMin + ':' + newSec;
-      timer.textContent = newTime;
-      barLength = timeHolder.clientWidth * (audioPlayer.currentTime / audioPlayer.duration);
-      timeBar.style.width = barLength + 'px';
-    },
-    getDBTables(cb){
-      /*Gets the contents of the 'artists', 'albums', and 'songs' tables
-        from the database and stores them for local use.*/
-      this.$http.get(baseURL + "/getArtists").then(response_ar => {
-        artistsDB = response_ar.body;
-        this.$http.get(baseURL + "/getAlbums").then(response_al => {
-          albumsDB = response_al.body;
-          this.$http.get(baseURL + "/getSongs").then(response_so => {
-            songsDB = response_so.body;
-            cb();
-          }, response_so => { console.log("Error: " + response_so.body); });
-        }, response_al => { console.log("Error: " + response_al.body); });
-      }, response_ar => { console.log("Error: " + response_ar.body); });
-    },
-    writeArtists(cb){
+    writeArtists(){
       /*Writes information for all artists on the main page. 'Width' denotes
       the maximum number of artists to display in one row on larger screens.*/
       if(songsDB === []){
@@ -186,53 +105,127 @@ export default {
       var numArtists = artistsDB.length;
 
       //Artist Links
-      var html = '<div class="container"><div class="row" id="artistHeader">'
-        + '<div class="col artistLink">Artist</div></div>'
-        + '<div class="row"><div class="col-sm artistLink" tag="ArID_0">'
-        + 'All Artists</div></div>'
-        + '<div class="row"><div class="col-sm artistLink" tag="ArID_-1">All Songs</div>'
+      var html = '<div class="container">';
+      html += '<div class="row artistLink allAlbums" tag="ArID_0"><div class="col">'
+        + 'All Albums</div></div>'
+        + '<div class="row artistLink allSongs" tag="ArID_-1"><div class="col">All Songs</div>'
         + '</div>';
+      html += '<div class="row" id="artistHeader"><div class="col-1"></div>'
+        + '<div class="col artistHeader">Artist</div><div class="col-1">Albums</div>'
+        + '<div class="col-1">Songs</div>'
+        + '<div class="col-1">Controls</div></div>'
       for(var i = 0; i < numArtists; i++){
-        html += '<div class="row"><div class="col-sm artistLink" tag=ArID_' +
-          artistsDB[i].id + '>' +
-          artistsDB[i].artist.toString() + '</div></div>';
+        var onArtistID = artistsDB[i].id.toString();
+        var onArtist = artistsDB[i].artist.toString();
+        var numAlbums = artistsDB[i].numAlbums.toString();
+        var numSongs = artistsDB[i].numSongs.toString();
+        html += '<div class="row artistLinkContainer" tag="ArID_' + onArtistID + '">'
+          + '<div class="col-1 artistLink" tag="ArID_' + onArtistID + '">' + (i+1).toString() + '</div>'
+          + '<div class="col artistLink" tag="ArID_' + onArtistID + '">' + onArtist + '</div>'
+          + '<div class="col-1 artistLink" tag="ArID_' + onArtistID + '">' + numAlbums + '</div>'
+          + '<div class="col-1 artistLink" tag="ArID_' + onArtistID + '">' + numSongs + '</div>'
+          + '<div class="col-1 allSongsByArtist" tag="ArID_' + onArtistID + '">PA</div></div>';
       }
       html += '</div>';
       document.getElementById("main").innerHTML = html;
-      cb();
+      
+      //listeners
+      var tempoWeb = this; //Holds 'tempoWeb' location through the callback
+      var artistLinks = document.getElementsByClassName("artistLink");
+      var playAllLinks = document.getElementsByClassName("allSongsByArtist");
+      for(var i=0; i < artistLinks.length; i++){
+        var artistLink = artistLinks[i];
+        artistLink.addEventListener('click', function() {
+          var artistID = this.attributes.tag.nodeValue.split('ArID_')[1];
+          if(artistID === '-1'){
+            //All songs entire catelog
+            document.getElementById("typeLable").innerHTML = "All Songs";
+            tempoWeb.writeSongPage(0, 0);
+          }
+          else if(artistID === '0'){
+            //All albums entire catelog
+            document.getElementById("typeLable").innerHTML = "All Albums";
+            tempoWeb.writeAlbumPage(0);
+          }
+          else{
+            tempoWeb.writeAlbumPage(artistID);
+          }
+        });
+      }
+      for(var i=0; i < playAllLinks.length; i++){
+        var playAllLink = playAllLinks[i];
+        playAllLink.addEventListener('click', function() {
+          songSet = [] //Clear song set
+          for(var j=0; j < songsDB.length; j++){
+            var onArtistID = parseInt(this.attributes.tag.nodeValue.split('ArID_')[1]);
+            if(songsDB[j].artist === onArtistID){
+              songSet.push(songsDB[j].id);
+            }
+          }
+          var toPlay = songSet[0];
+          tempoWeb.playSongById(toPlay);
+        });
+      }
+      //end listeners
     },
-    writeArtistPage(artistID, cb, width=8){
-      /*Writes information for a single artist, givin its artist ID.
-      Includes albums, songs, and additional information*/
+    writeAlbumPage(artistID){
+      /*Writes information about albums from one or more artists*/
       var albums = [];
-      for(var i=0; i < albumsDB.length; i++){
-        if(albumsDB[i].artist == artistID){
+      if(artistID === 0){
+        //All albums from all artists
+        for(var i=0; i < albumsDB.length; i++){
           albums.push(albumsDB[i]);
         }
       }
-      document.getElementById("typeLable").innerHTML = artistsDB[artistID - 1].artist;
+      else{
+        //Albums from a particular artist
+        for(var i=0; i < albumsDB.length; i++){
+          if(albumsDB[i].artist == artistID){
+            albums.push(albumsDB[i]);
+          }
+        }
+        document.getElementById("typeLable").innerHTML = artistsDB[artistID - 1].artist;
+      }
       var html = '<div class="container">'
-      html += '<div class="row"><div class="col-sm albumLink" tag="AlID_0">'
-      + 'All Songs</div>'; 
-      for(var i=0; i < albums.length; i++){
-        if((i+1) % width === 0 && i !== 0){
-          html += '</div>';
-        }
-        if((i+1) % width === 0 && i !== 0){
-          html += '<div class="row">';
-        }
-        html += '<div class="col-sm albumLink" tag=AlID_' +
-        albums[i].id + '>' +
-          albums[i].album.toString() + '</div>';
+      html += '<div class="row albumLink allSongs" tag="AlID_0"><div class="col" tag="AlID">'
+      + 'All Songs</div></div>'; 
+      html += '<div class="row" id="albumHeader"><div class="col-1"></div>'
+        + '<div class="col">Album</div><div class="col">Artist</div>'
+        + '<div class="col-1">Songs</div></div>';
+        for(var i=0; i < albums.length; i++){
+        var onSong = (i+1).toString();
+        var onAlbum = albums[i].album.toString();
+        var onArtistNumber = albums[i].artist;
+        var onArtist = artistsDB[onArtistNumber-1].artist;
+        var numSongs = albums[i].numSongs.toString();
+        html += '<div class="row albumLink" tag="AlID_' + albums[i].id + '">'
+          + '<div class="col-1">' + onSong + '</div>'
+          + '<div class="col">' + onAlbum + '</div>'
+          + '<div class="col">' + onArtist + '</div>'
+          + '<div class="col-1">' + numSongs + '</div></div>';
       }
       html += '</div>';
       document.getElementById('main').innerHTML = html;
-      cb()
+      //listeners TODO: Fix this for 'All Albumbs -> All Artists page
+      var tempoWeb = this;
+      var albumLinks = document.getElementsByClassName("albumLink");
+      var lastAlbum = albumLinks[albumLinks.length - 1].attributes.tag.nodeValue.split('AlID_')[1];
+      this.$http.get(baseURL + "/getArtistByAlbum/" + lastAlbum).then(response => {
+        var artistID = parseInt(response.body);
+        for(var i=0; i < albumLinks.length; i++){
+          var albumLink = albumLinks[i]
+          albumLink.addEventListener('click', function() {
+            var albumID = parseInt(this.attributes.tag.nodeValue.split('AlID_')[1]);
+            tempoWeb.writeSongPage(albumID, artistID);
+          });
+        }
+      }, response => { console.log("Error: " + response.body);});
+      //end listeners
     },
-    writeAlbumPage(albumID, artistID, cb) {
+    writeSongPage(albumID, artistID) {
     //Writes all songs in album
       var songs = [];
-      // browsingSongSet = [] //Clear the browsing set
+      browsingSongSet = [] //Clear the browsing set
       if(albumID === 0 && artistID === 0) {
         for(var i=0; i < songsDB.length; i++){
           songs.push(songsDB[i]);
@@ -282,73 +275,132 @@ export default {
       html += '</div>';
       //End Song Links
       document.getElementById('main').innerHTML = html;
-      cb();
-    },
-    playRandom(){
-      var src = baseURL + "/getRandomSong?time=" + Date.now()
-      this.playSong(src);
-    },
-    createArtistListeners(){
-      var tempoWeb = this; //Holds 'tempoWeb' location through the callback
-      var artistLinks = document.getElementsByClassName("artistLink");
-      for(var i=0; i < artistLinks.length; i++){
-        var artistLink = artistLinks[i];
-        artistLink.addEventListener('click', function() {
-          var artistID = this.attributes.tag.nodeValue.split('ArID_')[1];
-          if(artistID === '-1'){
-            //All songs entire catelog
-            document.getElementById("typeLable").innerHTML = "All Songs";
-            tempoWeb.writeAlbumPage(0, 0,  tempoWeb.createSongListeners);
-          }
-          else{
-            tempoWeb.writeArtistPage(artistID, tempoWeb.createAlbumListeners);
-          }
-        });
-      }
-    },
-    createAlbumListeners(){
-      var tempoWeb = this;
-      var albumLinks = document.getElementsByClassName("albumLink");
-      var lastAlbum = albumLinks[albumLinks.length - 1].attributes.tag.nodeValue.split('AlID_')[1];
-      this.$http.get(baseURL + "/getArtistByAlbum/" + lastAlbum).then(response => {
-        var artistID = parseInt(response.body);
-        for(var i=0; i < albumLinks.length; i++){
-          var albumLink = albumLinks[i]
-          albumLink.addEventListener('click', function() {
-            var albumID = parseInt(this.attributes.tag.nodeValue.split('AlID_')[1]);
-            tempoWeb.writeAlbumPage(albumID, artistID, tempoWeb.createSongListeners);
-          });
-        }
-      }, response => { console.log("Error: " + response.body);});
-    },
-    createSongListeners(){
+      //listeners
       var tempoWeb = this;
       var songLinks = document.getElementsByClassName("songLink");
       for(var i=0; i < songLinks.length; i++) {
         var songLink = songLinks[i];
         songLink.addEventListener('click', function() {
-          console.log("Got here");
           songSet = browsingSongSet.slice();
           var songId = this.attributes.tag.nodeValue.split('SoID_')[1];
           tempoWeb.playSongById(songId);
         });
       }
     },
+
+    //Player functions
+    control_play(play_button){
+      if(audioPlayer.paused) {
+        play_button.setAttribute('data-icon', 'u');
+        audioPlayer.play();
+      }
+      else{
+        play_button.setAttribute('data-icon', 'P');
+        audioPlayer.pause();
+      }
+    },
+    control_stop(play_button){
+      play_button.setAttribute('data-icon', 'P');
+      audioPlayer.pause();
+      audioPlayer.currentTime = 0;
+    },
+    control_next(){
+      var toPlay = nextSong;
+      console.log("Playing: " + toPlay);
+      var songSetIndex = songSet.indexOf(parseInt(toPlay));
+      if(toPlay !== -1){
+        if(songSet.length >= (songSetIndex + 1)){ 
+          nextSong = songSet[songSetIndex + 1]; //songID, if it exists
+        }
+        else{
+          nextSong = -1; //Otherwise, set to -1
+        }
+        console.log("Next up: " + nextSong);
+        this.playSongById(toPlay);
+        curSong = parseInt(toPlay);
+      }
+      else{
+        console.log("Hit end of queue");
+      }
+    },
+    control_back(){
+      if(audioPlayer.currentTime >= 3){
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+        audioPlayer.play();
+        return;
+      }
+      var songSetIndex = songSet.indexOf(parseInt(curSong));
+      if(songSetIndex - 1 >= 0 && songSetIndex - 1 <= songSet.length){
+        nextSong = curSong;
+        var toPlay = songSet[songSetIndex - 1];
+        this.playSongById(toPlay);
+        curSong = parseInt(toPlay);
+        console.log("Playing: " + toPlay);
+        console.log("Up next: " + nextSong);
+      }
+    },
+    updatePlayerTime(timeHolder, timeBar, timer, timeEnd){
+      var min = Math.floor(audioPlayer.currentTime / 60); //Min/Sec set by user
+      var sec = Math.floor(audioPlayer.currentTime - min * 60);
+      var newMin     //To build the updated display
+      var newSec;
+      var newTime;    //To update the display
+      var barLength;  //The time bar
+      if(min < 10){ newMin = '0' + min; }
+      else{ newMin = min;}
+      if(sec < 10){ newSec = '0' + sec; }
+      else{ newSec = sec; }
+      newTime = newMin + ':' + newSec;
+      timer.textContent = newTime;
+      barLength = timeHolder.clientWidth * (audioPlayer.currentTime / audioPlayer.duration);
+      timeBar.style.width = barLength + 'px';
+      
+      //End Time
+      var endMin = Math.floor(audioPlayer.duration / 60);
+      var endSec = Math.floor(audioPlayer.duration - endMin * 60);
+      if(endMin < 10){ endMin = '0' + endMin }
+      if(endSec < 10){ endSec = '0' + endSec }
+      timeEnd.textContent = endMin.toString() + ':' + endSec.toString();
+    },
+    //End player functions
+
+    //Helper functions
+    getArtistByID(artistID){
+      if(artistID < 1 || artistID > artistsDB.length) return null;
+      for(var i=0; i < artistsDB.length; i++){
+        if(artistsDB[i].id === artistID) return artistsDB[i].artist;
+      }
+      return null;
+    },
+    getDBTables(cb){
+      /*Gets the contents of the 'artists', 'albums', and 'songs' tables
+        from the database and stores them for local use.*/
+      this.$http.get(baseURL + "/getArtists").then(response_ar => {
+        artistsDB = response_ar.body;
+        this.$http.get(baseURL + "/getAlbums").then(response_al => {
+          albumsDB = response_al.body;
+          this.$http.get(baseURL + "/getSongs").then(response_so => {
+            songsDB = response_so.body;
+            cb();
+          }, response_so => { console.log("Error: " + response_so.body); });
+        }, response_al => { console.log("Error: " + response_al.body); });
+      }, response_ar => { console.log("Error: " + response_ar.body); });
+    },
   },
   mounted: function() {
+    //This is ran after the page is fully loaded.
     var tempoWeb = this;
     tempoWeb.getDBTables(function() {
-      tempoWeb.writeArtists(tempoWeb.createArtistListeners);
-      //tempoWeb.writeArtistPage(39);
+      tempoWeb.writeArtists();
     });
     document.getElementById("home").onclick = function(){
-      tempoWeb.writeArtists(tempoWeb.createArtistListeners);
+      tempoWeb.writeArtists();
     };
-
     audioPlayer.addEventListener('ended', function(){
       tempoWeb.control_next();
     });
-    
+
     //Player
     var audioHolder = document.querySelector('audio');
     var controller = document.querySelector('.controls');
@@ -357,7 +409,8 @@ export default {
     var controller_next = document.querySelector('.next');
     var controller_back = document.querySelector('.back');
     var timerHolder = document.querySelector('.timer');
-    var timer = document.querySelector('.timer span');
+    var timer = document.querySelector('.timerText');
+    var timeEnd = document.querySelector('.timeEnd');
     var timerBar = document.querySelector('.timer div');
 
     audioHolder.removeAttribute('controls');
@@ -368,7 +421,7 @@ export default {
     controller_next.addEventListener('click', function() {tempoWeb.control_next();});
     controller_back.addEventListener('click', function() {tempoWeb.control_back();});
     audioPlayer.addEventListener('timeupdate', function(){
-        tempoWeb.updatePlayerTime(timerHolder, timerBar, timer);
+        tempoWeb.updatePlayerTime(timerHolder, timerBar, timer, timeEnd);
       });
 
     var barLoc = timerHolder.getBoundingClientRect();
@@ -387,7 +440,6 @@ export default {
     //End Player
   }
 }
-
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

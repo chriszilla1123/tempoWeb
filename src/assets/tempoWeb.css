@@ -1,6 +1,7 @@
 html {
     --dark-background: #262626;
     --dark-foreground: #302830;
+    --dark-alt-foreground: rgb(14, 127, 165);
     --dark-foreground-border: #242424;
     --light-text: #ccc;
 }
@@ -23,20 +24,52 @@ body {
     font-size: .9em;
     text-align: left;
 }
-.artistLink, #artistHeader {
+.artistLink, #artistHeader, .allSongsByArtist {
+    color: var(--light-text);
+    background-color: var(--dark-foreground);
+    margin-top: 10px;
+    border-style: solid;
+    border-width: 0px;
+    border-color: var(--dark-foreground-border);
+    font-size: .9em;
+    text-align: left;
+}
+.albumLink, #albumHeader {
     color: var(--light-text);
     background-color: var(--dark-foreground);
     margin-top: 10px;
     border-style: solid;
     border-width: 1px;
     border-color: var(--dark-foreground-border);
-    font-size: 1.2em;
+    font-size: .9em;
     text-align: left;
+}
+.allSongs, .allAlbums {
+    background-color: var(--dark-background);
+}
+#artistHeader {
+    background-color: var(--dark-background);
+    text-decoration: underline;
+}
+#albumHeader {
+    background-color: var(--dark-background);
+    text-decoration: underline;
+}
+#songHeader {
+    
 }
 @font-face {
     font-family: 'HeydingsControlsRegular';
     src: url('heydings_controls.ttf');
 }
+#typeLable {
+    color: var(--light-text);
+    margin-top: 100px;
+}
+.navbar-brand {
+    color: var(--dark-alt-foreground);
+}
+/* Control buttons */
 .control-button:before{
     font-family: HeydingsControlsRegular;
     font-size: 20px;
@@ -45,48 +78,53 @@ body {
     color: #aaa;
     text-shadow: 1px 1px 0px black;
 }
-.controls {
-    visibility: hidden;
-    opacity: 0.5;
-    width: 400px;
+.control-button{
     border-radius: 10px;
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    margin-left: -200px;
-    background-color: black;
-    box-shadow: 3px 3px 5px black;
-    transition: 1s all;
-    display: flex;
 }
-.player:hover .controls, player:focus .controls {
-    //opacity: 1;
-}
+/*End Control buttons */
+
+/* Timer */
 .timer {
-    line-height: 38px;
-    font-size: 10px;
+/* The outer timer bar */
+    background-color: var(--dark-background);
+    width: 173px;
+    //width: 101%;
+    height: 20px;
+    margin-top: 10px;
+    border-radius: 8px;
+}
+.timerBar {
+/* The inner timer bar */
+    background-color: var(--dark-alt-foreground);
+    width: 0px;
+    height: 20px;
+    border-radius: 8px;
+}
+.timerText, .timeEnd {
+    position: absolute;
+    font-size: .7em;
     font-family: monospace;
-    text-shadow: 1px 1px 0px black;
-    color: white;
-    flex: 50;
-    position: relative;
-  }
-  .timer div {
-    position: absolute;
-    //background-color: rgba(255,255,255,0.2);
-    background-color: green;
-    left: 0;
-    top: 0;
-    width: 0;
-    height: 38px;
-    z-index: 1;
-  }
-  .timer span {
-    position: absolute;
-    z-index: 3; 
-    left: 19px;
-  }
-  
-  #typeLable {
+    margin-top: 2px;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
     color: var(--light-text);
 }
+.timerText {
+    margin-left: 10px;
+}
+.timeEnd {
+    margin-left: 130px;
+}
+/* End Timer */
+
+/* Now Playing Info */
+#playingInfo {
+    width: 400px;
+    height: 70px;
+    margin-left: 20px;
+    color: var(--light-text);
+}
+#cur-song, #cur-album, #cur-artist {
+    text-align: justify;
+    font-size: .9em;
+}
+/* End Now Playing Info */
