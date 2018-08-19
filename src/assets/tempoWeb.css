@@ -128,3 +128,16 @@ body {
     font-size: .9em;
 }
 /* End Now Playing Info */
+
+/*Search Bar*/
+#searchForm{
+    /*outer container*/
+    margin-left: 100px;
+}
+#searchBar{
+    /*The text input for search*/
+}
+#searchButton{
+    /*Submit button for search*/
+}
+/*End Search Bar*/

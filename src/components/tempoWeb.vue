@@ -287,6 +287,20 @@ export default {
         });
       }
     },
+    writeSearchResults(artists, albums, songs){//Todo: write the results.
+      console.log('artists:');
+      for(var i=0; i < artists.length; i++){
+        console.log(artists[i].artist);
+      }
+      console.log('albums: ');
+      for(var i=0; i < albums.length; i++){
+        console.log(albums[i].album);
+      }
+      console.log('songs: ');
+      for(var i=0; i < songs.length; i++){
+        console.log(songs[i].title);
+      }
+    },
 
     //Player functions
     control_play(play_button){
@@ -360,7 +374,9 @@ export default {
       var endMin = Math.floor(audioPlayer.duration / 60);
       var endSec = Math.floor(audioPlayer.duration - endMin * 60);
       if(endMin < 10){ endMin = '0' + endMin }
-      if(endSec < 10){ endSec = '0' + endSec }
+      //if(endSec < 10){ endSec = '0' + endSec }
+      if(isNaN(endMin)) endMin = '00';
+      if(isNaN(endSec)) endSec = '00';
       timeEnd.textContent = endMin.toString() + ':' + endSec.toString();
     },
     //End player functions
@@ -438,6 +454,21 @@ export default {
         }
     }
     //End Player
+
+    //Search bar
+    var searchForm = document.querySelector('#searchForm');
+    var searchBar = document.querySelector('#searchBar');
+    document.addEventListener('submit', function(){
+      var jsonRequest = {};
+      jsonRequest['all'] = searchBar.value;
+      jsonRequest = JSON.stringify(jsonRequest);
+      tempoWeb.$http.post(baseURL + "/search", jsonRequest).then(response => {
+        var artists = response.body[0][0];
+        var albums = response.body[1][0];
+        var songs = response.body[2][0];
+        tempoWeb.writeSearchResults(artists, albums, songs);
+      }, response => { console.log("Error: " + response.body); });
+    });
   }
 }
 </script>
