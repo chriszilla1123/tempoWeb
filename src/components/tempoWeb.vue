@@ -45,12 +45,10 @@ export default {
       else{
         nextSong = -1; //Otherwise, set to -1
       }
-      console.log("Next song: " + nextSong);
       audioPlayer.pause();
       audioPlayer.src = baseURL + "/getSongById/" + songID;
       audioPlayer.load();
       audioPlayer.play();
-      console.log("Playing: " + songID);
       curSong = parseInt(songID);
       this.writeCurrentPlayingInfo(songID);
     },
@@ -94,81 +92,22 @@ export default {
       document.getElementById('cur-album').innerHTML = album;
       document.getElementById('cur-artist').innerHTML = artist;
     },
-    writeArtists(){
-      /*Writes information for all artists on the main page. 'Width' denotes
-      the maximum number of artists to display in one row on larger screens.*/
+    writeAllArtists(){
+      /*Writes information for all artists on main page*/
       if(songsDB === []){
         console.log("Error: Calling writeArtists() before getSongs()");
         return;
       }
       document.getElementById("typeLable").innerHTML = "Artists";
-      var numArtists = artistsDB.length;
-
-      //Artist Links
-      var html = '<div class="container">';
-      html += '<div class="row artistLink allAlbums" tag="ArID_0"><div class="col">'
+      var html = '<div class="container"><div class="row artistLink allAlbums" tag="ArID_0"><div class="col">'
         + 'All Albums</div></div>'
         + '<div class="row artistLink allSongs" tag="ArID_-1"><div class="col">All Songs</div>'
-        + '</div>';
-      html += '<div class="row" id="artistHeader"><div class="col-1"></div>'
-        + '<div class="col artistHeader">Artist</div><div class="col-1">Albums</div>'
-        + '<div class="col-1">Songs</div>'
-        + '<div class="col-1">Controls</div></div>'
-      for(var i = 0; i < numArtists; i++){
-        var onArtistID = artistsDB[i].id.toString();
-        var onArtist = artistsDB[i].artist.toString();
-        var numAlbums = artistsDB[i].numAlbums.toString();
-        var numSongs = artistsDB[i].numSongs.toString();
-        html += '<div class="row artistLinkContainer" tag="ArID_' + onArtistID + '">'
-          + '<div class="col-1 artistLink" tag="ArID_' + onArtistID + '">' + (i+1).toString() + '</div>'
-          + '<div class="col artistLink" tag="ArID_' + onArtistID + '">' + onArtist + '</div>'
-          + '<div class="col-1 artistLink" tag="ArID_' + onArtistID + '">' + numAlbums + '</div>'
-          + '<div class="col-1 artistLink" tag="ArID_' + onArtistID + '">' + numSongs + '</div>'
-          + '<div class="col-1 allSongsByArtist" tag="ArID_' + onArtistID + '">PA</div></div>';
-      }
-      html += '</div>';
+        + '</div></div>';
+      html += this.writeArtists(artistsDB);
       document.getElementById("main").innerHTML = html;
-      
-      //listeners
-      var tempoWeb = this; //Holds 'tempoWeb' location through the callback
-      var artistLinks = document.getElementsByClassName("artistLink");
-      var playAllLinks = document.getElementsByClassName("allSongsByArtist");
-      for(var i=0; i < artistLinks.length; i++){
-        var artistLink = artistLinks[i];
-        artistLink.addEventListener('click', function() {
-          var artistID = this.attributes.tag.nodeValue.split('ArID_')[1];
-          if(artistID === '-1'){
-            //All songs entire catelog
-            document.getElementById("typeLable").innerHTML = "All Songs";
-            tempoWeb.writeSongPage(0, 0);
-          }
-          else if(artistID === '0'){
-            //All albums entire catelog
-            document.getElementById("typeLable").innerHTML = "All Albums";
-            tempoWeb.writeAlbumPage(0);
-          }
-          else{
-            tempoWeb.writeAlbumPage(artistID);
-          }
-        });
-      }
-      for(var i=0; i < playAllLinks.length; i++){
-        var playAllLink = playAllLinks[i];
-        playAllLink.addEventListener('click', function() {
-          songSet = [] //Clear song set
-          for(var j=0; j < songsDB.length; j++){
-            var onArtistID = parseInt(this.attributes.tag.nodeValue.split('ArID_')[1]);
-            if(songsDB[j].artist === onArtistID){
-              songSet.push(songsDB[j].id);
-            }
-          }
-          var toPlay = songSet[0];
-          tempoWeb.playSongById(toPlay);
-        });
-      }
-      //end listeners
+      this.addArtistListeners();
     },
-    writeAlbumPage(artistID){
+    writeAlbumByArtist(artistID){
       /*Writes information about albums from one or more artists*/
       var albums = [];
       if(artistID === 0){
@@ -186,43 +125,15 @@ export default {
         }
         document.getElementById("typeLable").innerHTML = artistsDB[artistID - 1].artist;
       }
-      var html = '<div class="container">'
-      html += '<div class="row albumLink allSongs" tag="AlID_0"><div class="col" tag="AlID">'
-      + 'All Songs</div></div>'; 
-      html += '<div class="row" id="albumHeader"><div class="col-1"></div>'
-        + '<div class="col">Album</div><div class="col">Artist</div>'
-        + '<div class="col-1">Songs</div></div>';
-        for(var i=0; i < albums.length; i++){
-        var onSong = (i+1).toString();
-        var onAlbum = albums[i].album.toString();
-        var onArtistNumber = albums[i].artist;
-        var onArtist = artistsDB[onArtistNumber-1].artist;
-        var numSongs = albums[i].numSongs.toString();
-        html += '<div class="row albumLink" tag="AlID_' + albums[i].id + '">'
-          + '<div class="col-1">' + onSong + '</div>'
-          + '<div class="col">' + onAlbum + '</div>'
-          + '<div class="col">' + onArtist + '</div>'
-          + '<div class="col-1">' + numSongs + '</div></div>';
-      }
-      html += '</div>';
+      
+      if(albums.length === 0) return;
+      var html = '<div class="container"><div class="row albumLink allSongs" tag="AlID_0"><div class="col" tag="AlID">'
+      + 'All Songs</div></div></div>'; 
+      html += this.writeAlbums(albums);
       document.getElementById('main').innerHTML = html;
-      //listeners TODO: Fix this for 'All Albumbs -> All Artists page
-      var tempoWeb = this;
-      var albumLinks = document.getElementsByClassName("albumLink");
-      var lastAlbum = albumLinks[albumLinks.length - 1].attributes.tag.nodeValue.split('AlID_')[1];
-      this.$http.get(baseURL + "/getArtistByAlbum/" + lastAlbum).then(response => {
-        var artistID = parseInt(response.body);
-        for(var i=0; i < albumLinks.length; i++){
-          var albumLink = albumLinks[i]
-          albumLink.addEventListener('click', function() {
-            var albumID = parseInt(this.attributes.tag.nodeValue.split('AlID_')[1]);
-            tempoWeb.writeSongPage(albumID, artistID);
-          });
-        }
-      }, response => { console.log("Error: " + response.body);});
-      //end listeners
+      this.addAlbumListeners();
     },
-    writeSongPage(albumID, artistID) {
+    writeSongByAlbumArtist(albumID, artistID) {
     //Writes all songs in album
       var songs = [];
       browsingSongSet = [] //Clear the browsing set
@@ -252,7 +163,53 @@ export default {
         }
         document.getElementById("typeLable").innerHTML = albumsDB[albumID - 1].album;
       }
-      //Song Links
+      var html = this.writeSongs(songs);
+      document.getElementById('main').innerHTML = html;
+      this.addSongListeners();
+    },
+    writeArtists(artists){
+      /*Writes links and listeners for artists in the given set*/
+      var html = '<div class="container">';
+      html += '<div class="row" id="artistHeader"><div class="col-1"></div>'
+        + '<div class="col artistHeader">Artist</div><div class="col-1">Albums</div>'
+        + '<div class="col-1">Songs</div>'
+        + '<div class="col-1">Controls</div></div>'
+      for(var i = 0; i < artists.length; i++){
+        var onArtistID = artists[i].id.toString();
+        var onArtist = artists[i].artist.toString();
+        var numAlbums = artists[i].numAlbums.toString();
+        var numSongs = artists[i].numSongs.toString();
+        html += '<div class="row artistLinkContainer" tag="ArID_' + onArtistID + '">'
+          + '<div class="col-1 artistLink" tag="ArID_' + onArtistID + '">' + (i+1).toString() + '</div>'
+          + '<div class="col artistLink" tag="ArID_' + onArtistID + '">' + onArtist + '</div>'
+          + '<div class="col-1 artistLink" tag="ArID_' + onArtistID + '">' + numAlbums + '</div>'
+          + '<div class="col-1 artistLink" tag="ArID_' + onArtistID + '">' + numSongs + '</div>'
+          + '<div class="col-1 allSongsByArtist" tag="ArID_' + onArtistID + '">PA</div></div>';
+      }
+      html += '</div>';
+      return html;
+    },
+    writeAlbums(albums){
+      var html = '<div class="container">'
+      html += '<div class="row" id="albumHeader"><div class="col-1"></div>'
+        + '<div class="col">Album</div><div class="col">Artist</div>'
+        + '<div class="col-1">Songs</div></div>';
+        for(var i=0; i < albums.length; i++){
+        var onSong = (i+1).toString();
+        var onAlbum = albums[i].album.toString();
+        var onArtistNumber = albums[i].artist;
+        var onArtist = artistsDB[onArtistNumber-1].artist;
+        var numSongs = albums[i].numSongs.toString();
+        html += '<div class="row albumLink" tag="AlID_' + albums[i].id + '">'
+          + '<div class="col-1">' + onSong + '</div>'
+          + '<div class="col">' + onAlbum + '</div>'
+          + '<div class="col">' + onArtist + '</div>'
+          + '<div class="col-1">' + numSongs + '</div></div>';
+      }
+      html += '</div>';
+      return html
+    },
+    writeSongs(songs){
       var html = '<div class="container">'
         + '<div class="row" id="songHeader">'
         + '<div class="col-1"></div><div class="col">Title</div><div class="col">Artist</div>'
@@ -273,33 +230,106 @@ export default {
           + '</div>';
       }
       html += '</div>';
-      //End Song Links
-      document.getElementById('main').innerHTML = html;
-      //listeners
+      return html;
+    },
+    addArtistListeners(){
+      var tempoWeb = this; //Holds 'tempoWeb' location through the callback
+      var artistLinks = document.getElementsByClassName("artistLink");
+      var playAllLinks = document.getElementsByClassName("allSongsByArtist");
+      for(var i=0; i < artistLinks.length; i++){
+        var artistLink = artistLinks[i];
+        artistLink.addEventListener('click', function() {
+          var artistID = this.attributes.tag.nodeValue.split('ArID_')[1];
+          if(artistID === '-1'){
+            //All songs entire catelog
+            document.getElementById("typeLable").innerHTML = "All Songs";
+            tempoWeb.writeSongByAlbumArtist(0, 0);
+          }
+          else if(artistID === '0'){
+            //All albums entire catelog
+            document.getElementById("typeLable").innerHTML = "All Albums";
+            tempoWeb.writeAlbumByArtist(0);
+          }
+          else{
+            tempoWeb.writeAlbumByArtist(artistID);
+          }
+        });
+      }
+      for(var i=0; i < playAllLinks.length; i++){
+        var playAllLink = playAllLinks[i];
+        playAllLink.addEventListener('click', function() {
+          songSet = [] //Clear song set
+          for(var j=0; j < songsDB.length; j++){
+            var onArtistID = parseInt(this.attributes.tag.nodeValue.split('ArID_')[1]);
+            if(songsDB[j].artist === onArtistID){
+              songSet.push(songsDB[j].id);
+            }
+          }
+          var toPlay = songSet[0];
+          tempoWeb.playSongById(toPlay);
+        });
+      }
+    },
+    addAlbumListeners(){
+      //TODO: Fix this for 'All Albumbs -> All Artists page
+      var tempoWeb = this;
+      var albumLinks = document.getElementsByClassName("albumLink");
+      if(albumLinks.length === 0)return;
+      var lastAlbum = albumLinks[albumLinks.length - 1].attributes.tag.nodeValue.split('AlID_')[1];
+      this.$http.get(baseURL + "/getArtistByAlbum/" + lastAlbum).then(response => {
+        var artistID = parseInt(response.body);
+        for(var i=0; i < albumLinks.length; i++){
+          var albumLink = albumLinks[i]
+          albumLink.addEventListener('click', function() {
+            var albumID = parseInt(this.attributes.tag.nodeValue.split('AlID_')[1]);
+            tempoWeb.writeSongByAlbumArtist(albumID, artistID);
+          });
+        }
+      }, response => { console.log("Error: " + response.body);});
+    },
+    addSongListeners(){
       var tempoWeb = this;
       var songLinks = document.getElementsByClassName("songLink");
       for(var i=0; i < songLinks.length; i++) {
         var songLink = songLinks[i];
         songLink.addEventListener('click', function() {
           songSet = browsingSongSet.slice();
+          console.log("Song Set: ");
+          console.log(songSet);
+          console.log('----------------');
           var songId = this.attributes.tag.nodeValue.split('SoID_')[1];
           tempoWeb.playSongById(songId);
         });
       }
     },
-    writeSearchResults(artists, albums, songs){//Todo: write the results.
-      console.log('artists:');
-      for(var i=0; i < artists.length; i++){
-        console.log(artists[i].artist);
+    writeSearchResults(artistsSet, albumsSet, songsSet){//todo add browsing set.
+      var html = ""
+      if(artistsSet.length !== 0){
+        html += '<div class="subLable">Artists</div>';
+        html += this.writeArtists(artistsSet);
       }
-      console.log('albums: ');
-      for(var i=0; i < albums.length; i++){
-        console.log(albums[i].album);
+      if(albumsSet.length !== 0){
+        html += '<div class="subLable">Albums</div>';
+        html += this.writeAlbums(albumsSet);
       }
-      console.log('songs: ');
-      for(var i=0; i < songs.length; i++){
-        console.log(songs[i].title);
+      if(songsSet.length !== 0){
+        console.log("found songs");
+        html += '<div class="subLable">Songs</div>';
+        html += this.writeSongs(songsSet);
+        this.browsingSongSet = [];
+        for(var i=0; i < songsSet.length; i++){
+          console.log("got here");
+          this.browsingSongSet.push(songsSet[i]);
+        }
+        console.log("songset: ") + browsingSongSet;
       }
+      if(html.length === 0){
+        html += '<p>No Results Found</p>'
+      }
+      document.getElementById('main').innerHTML = html;
+      this.addArtistListeners();
+      this.addAlbumListeners();
+      this.addSongListeners();
     },
 
     //Player functions
@@ -320,7 +350,6 @@ export default {
     },
     control_next(){
       var toPlay = nextSong;
-      console.log("Playing: " + toPlay);
       var songSetIndex = songSet.indexOf(parseInt(toPlay));
       if(toPlay !== -1){
         if(songSet.length >= (songSetIndex + 1)){ 
@@ -329,7 +358,6 @@ export default {
         else{
           nextSong = -1; //Otherwise, set to -1
         }
-        console.log("Next up: " + nextSong);
         this.playSongById(toPlay);
         curSong = parseInt(toPlay);
       }
@@ -350,8 +378,6 @@ export default {
         var toPlay = songSet[songSetIndex - 1];
         this.playSongById(toPlay);
         curSong = parseInt(toPlay);
-        console.log("Playing: " + toPlay);
-        console.log("Up next: " + nextSong);
       }
     },
     updatePlayerTime(timeHolder, timeBar, timer, timeEnd){
@@ -374,12 +400,27 @@ export default {
       var endMin = Math.floor(audioPlayer.duration / 60);
       var endSec = Math.floor(audioPlayer.duration - endMin * 60);
       if(endMin < 10){ endMin = '0' + endMin }
-      //if(endSec < 10){ endSec = '0' + endSec }
+      if(endSec < 10){ endSec = '0' + endSec }
       if(isNaN(endMin)) endMin = '00';
       if(isNaN(endSec)) endSec = '00';
       timeEnd.textContent = endMin.toString() + ':' + endSec.toString();
     },
     //End player functions
+
+    //Search
+    searchAll(input){
+      document.getElementById('typeLable').innerHTML = "Search Results for " + input;
+      var jsonRequest = {};
+      jsonRequest['all'] = input;
+      jsonRequest = JSON.stringify(jsonRequest);
+      this.$http.post(baseURL + "/search", jsonRequest).then(response => {
+        var artists = response.body[0][0];
+        var albums = response.body[1][0];
+        var songs = response.body[2][0];
+        this.writeSearchResults(artists, albums, songs);
+      }, response => { console.log("Error: " + response.body); });
+    },
+    //End Search
 
     //Helper functions
     getArtistByID(artistID){
@@ -408,10 +449,10 @@ export default {
     //This is ran after the page is fully loaded.
     var tempoWeb = this;
     tempoWeb.getDBTables(function() {
-      tempoWeb.writeArtists();
+      tempoWeb.writeAllArtists();
     });
     document.getElementById("home").onclick = function(){
-      tempoWeb.writeArtists();
+      tempoWeb.writeAllArtists();
     };
     audioPlayer.addEventListener('ended', function(){
       tempoWeb.control_next();
@@ -459,15 +500,12 @@ export default {
     var searchForm = document.querySelector('#searchForm');
     var searchBar = document.querySelector('#searchBar');
     document.addEventListener('submit', function(){
-      var jsonRequest = {};
-      jsonRequest['all'] = searchBar.value;
-      jsonRequest = JSON.stringify(jsonRequest);
-      tempoWeb.$http.post(baseURL + "/search", jsonRequest).then(response => {
-        var artists = response.body[0][0];
-        var albums = response.body[1][0];
-        var songs = response.body[2][0];
-        tempoWeb.writeSearchResults(artists, albums, songs);
-      }, response => { console.log("Error: " + response.body); });
+      var input = searchBar.value;
+      tempoWeb.searchAll(input);
+    });
+    searchBar.addEventListener('input', function(){
+      var input = searchBar.value;
+      tempoWeb.searchAll(input);
     });
   }
 }
