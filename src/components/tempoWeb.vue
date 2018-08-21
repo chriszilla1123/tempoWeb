@@ -184,7 +184,8 @@ export default {
           + '<div class="col artistLink" tag="ArID_' + onArtistID + '">' + onArtist + '</div>'
           + '<div class="col-1 artistLink" tag="ArID_' + onArtistID + '">' + numAlbums + '</div>'
           + '<div class="col-1 artistLink" tag="ArID_' + onArtistID + '">' + numSongs + '</div>'
-          + '<div class="col-1 allSongsByArtist" tag="ArID_' + onArtistID + '">PA</div></div>';
+          + '<div class="col-1 artistAlbumControls" tag="ArID_' + onArtistID + '" title="Play All">'
+          + '<i class="allSongsByArtist fas fa-play"></i> <i class="editArtist fas fa-cog"></i></div></div>';
       }
       html += '</div>';
       return html;
@@ -236,6 +237,7 @@ export default {
       var tempoWeb = this; //Holds 'tempoWeb' location through the callback
       var artistLinks = document.getElementsByClassName("artistLink");
       var playAllLinks = document.getElementsByClassName("allSongsByArtist");
+      var editLinks = document.getElementsByClassName("editArtist");
       for(var i=0; i < artistLinks.length; i++){
         var artistLink = artistLinks[i];
         artistLink.addEventListener('click', function() {
@@ -256,11 +258,12 @@ export default {
         });
       }
       for(var i=0; i < playAllLinks.length; i++){
+        var tempoWeb = this; //Store reference to 'this' across callbacks.
         var playAllLink = playAllLinks[i];
         playAllLink.addEventListener('click', function() {
           songSet = [] //Clear song set
           for(var j=0; j < songsDB.length; j++){
-            var onArtistID = parseInt(this.attributes.tag.nodeValue.split('ArID_')[1]);
+            var onArtistID = parseInt(this.parentElement.attributes.tag.nodeValue.split('ArID_')[1]);
             if(songsDB[j].artist === onArtistID){
               songSet.push(songsDB[j].id);
             }
@@ -269,6 +272,31 @@ export default {
           tempoWeb.playSongById(toPlay);
         });
       }
+      //Edit Artist
+      var modal = document.getElementById('artistModal');
+      var editArtistForm = document.getElementById('editArtistForm');
+      var editArtistNameBar = document.getElementById('editArtistNameBar');
+      var editArtistButton = document.getElementById('editArtistButton');
+      for(var i=0; i < editLinks.length; i++){
+        var editLink = editLinks[i];
+        editLink.addEventListener('click', function(){
+          var artistID = parseInt(this.parentElement.attributes.tag.nodeValue.split('ArID_')[1]);
+          console.log('Editing artist number: ' + artistID);
+          modal.style.display = "block";
+          document.getElementById("editArtistLable").innerHTML = artistID;
+          
+          var exit = document.getElementsByClassName("close")[0];
+          exit.onclick = function(){
+            modal.style.display = "none";
+          }
+
+          editArtistButton.onclick = function(){
+            tempoWeb.updateArtistInfo(artistID, editArtistNameBar.value);
+            modal.style.display = "none";
+          }
+        });
+      }
+      //End Edit Artist
     },
     addAlbumListeners(){
       //TODO: Fix this for 'All Albumbs -> All Artists page
@@ -444,6 +472,17 @@ export default {
         }, response_al => { console.log("Error: " + response_al.body); });
       }, response_ar => { console.log("Error: " + response_ar.body); });
     },
+    updateArtistInfo(id, name){
+      var tempoWeb = this; //store reference to 'this' across callback
+      var jsonRequest = {};
+      jsonRequest['artist'] = name;
+      jsonRequest = JSON.stringify(jsonRequest);
+      var endpoint = baseURL + '/updateArtistInfo/' + id.toString();
+      console.log(endpoint);
+      this.$http.put(endpoint, jsonRequest).then(response => {
+        this.getDBTables(this.writeAllArtists);
+      }, response => {console.log('Error: ' + response.body)});
+    },
   },
   mounted: function() {
     //This is ran after the page is fully loaded.
@@ -507,6 +546,7 @@ export default {
       var input = searchBar.value;
       tempoWeb.searchAll(input);
     });
+    //End Search Bar
   }
 }
 </script>

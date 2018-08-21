@@ -1,43 +1,60 @@
 <div id="main-page">
-    <!-- Navber / Player -->
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-      <div class="navbar-brand" id="home">Tempo Web</div>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav">
-          <div id="controlHolder" class="container">
-            <audio controls></audio>
-            <div class="row">
-              <div class="controls">
-                  <button class="back control-button" data-icon="B" aria-label="rewind"></button>
-                  <button class="play control-button" data-icon="P" aria-label="play pause toggle"></button>
-                  <button class="stop control-button" data-icon="S" aria-label="stop"></button>
-                  <button class="next control-button" data-icon="F" aria-label="fast forward"></button>
-              </div>
-            </div>
-            <div class="row timer">
-              <div class="timerBar"></div>
-              <span class="timerText">00:00</span>
-              <span class="timeEnd">00:00</span>
+  <!-- Navber / Player -->
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="navbar-brand" id="home">Tempo Web</div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav">
+        <div id="controlHolder" class="container">
+          <audio controls></audio>
+          <div class="row">
+            <div class="controls">
+                <button class="back control-button" data-icon="B" aria-label="rewind"></button>
+                <button class="play control-button" data-icon="P" aria-label="play pause toggle"></button>
+                <button class="stop control-button" data-icon="S" aria-label="stop"></button>
+                <button class="next control-button" data-icon="F" aria-label="fast forward"></button>
             </div>
           </div>
-        </ul>
-        <ul class="navbar-nav">
-            <div class="container" id="playingInfo">
-              <div class="row" id="cur-song"></div>
-              <div class="row" id="cur-album"></div>
-              <div class="row" id="cur-artist"></div>
-            </div>
-        </ul>
-        <form class="form-inline mt-2 mt-md-0" id="searchForm">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search" id="searchBar">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="searchButton">Search</button>
-        </form>
+          <div class="row timer">
+            <div class="timerBar"></div>
+            <span class="timerText">00:00</span>
+            <span class="timeEnd">00:00</span>
+          </div>
+        </div>
+      </ul>
+      <ul class="navbar-nav">
+          <div class="container" id="playingInfo">
+            <div class="row" id="cur-song"></div>
+            <div class="row" id="cur-album"></div>
+            <div class="row" id="cur-artist"></div>
+          </div>
+      </ul>
+      <form class="form-inline mt-2 mt-md-0" id="searchForm">
+        <input class="form-control mr-sm-2" type="text" placeholder="Search" id="searchBar">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="searchButton">Search</button>
+      </form>
+    </div>
+  </nav>
+  <!-- End Nav/Player -->
+  <h1 id="typeLable">Artists</h1>
+  <div id="main"></div>
+
+  <!-- Edit Artist Modal -->
+
+  <div id="artistModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+      <div class="row">
+        <div class="offset-4"></div>
+        <p class="col-3">Editing Artist: </p><p class="col-1" id="editArtistLable"></p>
       </div>
-    </nav>
-    <!-- End Nav/Player -->
-    <h1 id="typeLable">Artists</h1>
-    <div id="main"></div>
+      <div class="form-inline row" id="editArtistForm">
+        <input class="form-control" type="text" placeholder="Artist Name" id="editArtistNameBar">
+        <button class="btn" type="submit" id="editArtistButton">Update</button>
+      </div>
+    </div>
   </div>
+  <!-- End Edit Artist Modal -->
+</div>
