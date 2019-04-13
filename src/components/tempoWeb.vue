@@ -1,11 +1,13 @@
-<template src="../assets/tempoWeb.html"></template>
+<!--
+
+<template src="../assets/player.html"></template>
 
 <script>
 //import 'player.js';
 //player myplayer;
 
 var audioPlayer = new Audio();
-var baseURL = "http://www.chilltec.net:8000";
+var baseURL = "http://www.chrisco.top:8000";
 var songSet = []; /*List of songs in the current playing set*/
 var curSong = -1; /*ID of the currently playing song*/
 var nextSong = -1; /*ID of next song to be played from the current playing set*/
@@ -551,5 +553,8 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+ //Add "scoped" attribute to limit CSS to this component only//
 <style type="text/css">@import url("../assets/tempoWeb.css");</style>
+
+
+-->

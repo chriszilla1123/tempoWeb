@@ -1,12 +1,15 @@
 <template>
   <div id="app">
+    <tempo/>
     <router-view/>
   </div>
 </template>
 
 <script>
+import tempo from "./components/tempo";
 export default {
   name: 'app',
+  components: {tempo},
   methods: {
   },
 }

@@ -66,7 +66,7 @@ p {
     font-family: 'HeydingsControlsRegular';
     src: url('heydings_controls.ttf');
 }
-#typeLable {
+#typeLabel {
     color: var(--light-text);
     margin-top: 100px;
 }
@@ -81,12 +81,12 @@ p {
 }
 /* Player buttons */
 .control-button:before{
-    font-family: HeydingsControlsRegular;
+    font-family: HeydingsControlsRegular, sans-serif;
     font-size: 20px;
     position: relative;
     content: attr(data-icon);
     color: #aaa;
-    text-shadow: 1px 1px 0px black;
+    text-shadow: 1px 1px 0 black;
 }
 .control-button{
     border-radius: 10px;
@@ -116,7 +116,7 @@ p {
 .timerBar {
 /* The inner timer bar */
     background-color: var(--dark-alt-foreground);
-    width: 0px;
+    width: 0;
     height: 20px;
     border-radius: 8px;
 }
