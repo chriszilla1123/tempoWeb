@@ -9,7 +9,7 @@
   import dbf from "../assets/databaseFunctions";
 
   let audioPlayer = new Audio();
-  let baseURL = "https://www.chrisco.top:8000";
+  let baseURL = "https://www.chrisco.top/api";
   let songSet = []; /*List of songs in the current playing set*/
   let curSong = -1; /*ID of the currently playing song*/
   let nextSong = -1; /*ID of next song to be played from the current playing set*/
