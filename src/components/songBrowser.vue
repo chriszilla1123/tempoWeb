@@ -17,9 +17,9 @@ export default {
 
       //Write the header HTML
       let html = '<div class="container">'
-          + '<div class="row" id="songHeader">'
+          /*+ '<div class="row" id="songHeader">'
           + '<div class="col-1"></div><div class="col">Title</div><div class="col">Artist</div>'
-          + '<div class="col">Album</div></div>';
+          + '<div class="col">Album</div></div>';*/
 
       for (let i = 0; i < songs.length; i++) {
         let songID = songs[i];
@@ -32,11 +32,11 @@ export default {
 
         //Write the HTML for each song
         html += '<div class="row songLink align-middle" tag="SoID_' + songID + '">'
-            + '<div class="col-1">' + (i + 1).toString() + '</div>'
-            + '<div class="col">' + songTitle + '</div>'
-            + '<div class="col">' + artistName + '</div>'
-            + '<div class="col">' + albumName + '</div>'
+            + '<div class="col-6">' + songTitle + '</div>'
+            + '<div class="col songSubInfo">' + artistName + '</div>'
+            + '<div class="col songSubInfo">' + albumName + '</div>'
             + '</div>';
+        html += '<div class="songbreak"/>'
       }
       html += '</div>';
       //Set the content body to the generated HTML
@@ -50,12 +50,10 @@ export default {
       for (let i = 0; i < songLinks.length; i++) {
         let songLink = songLinks[i];
         songLink.addEventListener('click', function () {
-          console.log(this);
           let songID = this.attributes.tag.nodeValue.split('SoID_')[1];
-          tempo.playSongById(songID);
-
-          //Update the SongSet
+          //Update the SongSet BEFORE playing the song
           tempo.setSongSet(songList);
+          tempo.playSongById(songID);
         })
       }
     }

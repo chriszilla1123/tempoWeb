@@ -1,9 +1,13 @@
 html {
-    --dark-background: #262626;
-    --dark-foreground: #302830;
+    /*--dark-background: #262626;*/
+    --dark-background: #161616;
+    /*--dark-foreground: #302830;*/
+    --dark-foreground: #202020;
     --dark-alt-foreground: rgb(14, 127, 165);
     --dark-foreground-border: #242424;
     --light-text: #ccc;
+    --light-subtext: #aaa;
+    --light-divider: #777
 }
 body {
     background-color: var(--dark-background);
@@ -17,16 +21,6 @@ p {
     margin-top: 10px;
     color: var(--light-text);
   }
-.songLink, #songHeader {
-    color: var(--light-text);
-    background-color: var(--dark-foreground);
-    margin-top: 10px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: var(--dark-foreground-border);
-    font-size: .9em;
-    text-align: left;
-}
 .artistLink, #artistHeader, .artistAlbumControls {
     color: var(--light-text);
     background-color: var(--dark-foreground);
@@ -70,6 +64,12 @@ p {
     color: var(--light-text);
     margin-top: 100px;
 }
+#tempoLogo {
+    width: 4em;
+}
+#tempoTitle {
+
+}
 .subLable {
     color: var(--light-text);
     margin-top: 40px;
@@ -77,7 +77,7 @@ p {
     text-decoration: underline;
 }
 .navbar-brand {
-    color: var(--dark-alt-foreground);
+    /*color: var(--dark-alt-foreground);*/
 }
 /* Player buttons */
 .control-button:before{
@@ -161,6 +161,27 @@ p {
     /*Submit button for search*/
 }
 /*End Search Bar*/
+
+/* Song Browser */
+.songbreak {
+    background-color: var(--light-divider);
+    height: 1px;
+    padding:1px;
+}
+.songLink, #songHeader {
+    color: var(--light-text);
+    /*background-color: var(--dark-foreground);*/
+    margin-top: 10px;
+    /*border-style: solid;
+    border-width: 1px;
+    border-color: var(--dark-foreground-border);*/
+    font-size: .9em;
+    text-align: left;
+}
+.songSubInfo {
+    color: var(--light-subtext);
+}
+/* End Song Browser */
 
 /*Edit Artist Modal*/
 

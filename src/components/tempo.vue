@@ -9,7 +9,7 @@
   import dbf from "../assets/databaseFunctions";
 
   let audioPlayer = new Audio();
-  let baseURL = "http://www.chrisco.top:8000";
+  let baseURL = "https://www.chrisco.top:8000";
   let songSet = []; /*List of songs in the current playing set*/
   let curSong = -1; /*ID of the currently playing song*/
   let nextSong = -1; /*ID of next song to be played from the current playing set*/
@@ -58,6 +58,7 @@
       },
       setSongSet(set){
         /*Holds the list of songs currently playing. MUST be called every time a song is clicked by the user */
+        /*MUST be called BEFORE the playSongById function when clicking a song*/
         songSet = set;
       },
       setBrowsingSongSet(set){
@@ -299,11 +300,14 @@
         //Start the artistBrowser by default
         tempo.openArtistBrowser({showAll: true});
       });
-      document.getElementById("home").onclick = function () {
-        //tempo.writeAllArtists();
-      };
+      let homeLinks = document.getElementsByClassName('home');
+      for(let i=0; i<homeLinks.length; i++){
+        homeLinks[i].onclick = function(){
+          tempo.openArtistBrowser({showAll: true})
+        }
+      }
       audioPlayer.addEventListener('ended', function () {
-        //tempo.control_next();
+        tempo.control_next();
       });
 
       //Player
