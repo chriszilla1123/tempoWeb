@@ -238,6 +238,7 @@
             songsDB: songsDB,
           }
         });
+        window.history.replaceState([], "/", "/"); //updates URL
       },
       openAlbumBrowser(options){ //Supported options: {albumList: Array, showAll: Boolean, label: String}
         let albumList;
@@ -267,7 +268,8 @@
             albumsDB: albumsDB,
             songsDB: songsDB,
           }
-        })
+        });
+        window.history.replaceState([], "/", "/"); //Updates URL
       },
       openSongBrowser(songList, showAll = false, typeLabel = undefined){
         if(showAll === true){
@@ -283,7 +285,8 @@
             albumsDB: albumsDB,
             songsDB: songsDB,
           }
-        })
+        });
+        window.history.replaceState([], "/", "/"); //updates URL
       },
       //End routing functions
 

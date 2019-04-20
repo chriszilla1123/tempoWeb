@@ -54,7 +54,6 @@
       },
     },
     mounted: function() {
-      window.history.replaceState([], "/", "/"); //Updates URL
       let tempo = this.tempo;
       let albumBrowser = this;
       let albumList = this.albumList;

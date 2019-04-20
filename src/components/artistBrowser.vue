@@ -70,7 +70,6 @@
       },
     },
     mounted: function () {
-      window.history.replaceState([], "/", "/"); //updates URL
       let tempo = this.tempo;
       let artistBrowser = this;
       let artistList = this.artistList;

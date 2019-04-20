@@ -59,7 +59,6 @@ export default {
     }
   },
   mounted: function () {
-    window.history.replaceState([], "/", "/"); //updates URL
     let tempo = this.tempo;
     let songBrowser = this;
     let songList = this.songList;
