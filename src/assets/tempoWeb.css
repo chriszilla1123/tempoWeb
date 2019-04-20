@@ -7,7 +7,12 @@ html {
     --dark-foreground-border: #242424;
     --light-text: #ccc;
     --light-subtext: #aaa;
-    --light-divider: #777
+    --light-divider: #777;
+
+    --size-sm: 576px;
+    --size-md: 768px;
+    --size-lg: 992px;
+    --size-xl: 1200px;
 }
 body {
     background-color: var(--dark-background);
@@ -64,11 +69,6 @@ p {
     color: var(--light-text);
     margin-top: 100px;
 }
-#tempoLogo {
-    width: 3em;
-    padding: 0;
-    margin: 0;
-}
 #tempoTitle {
 
 }
@@ -78,9 +78,28 @@ p {
     font-size: 1.5em;
     text-decoration: underline;
 }
+/* Nav Bar */
 .navbar-brand {
     /*color: var(--dark-alt-foreground);*/
 }
+.navbar-collapse.collapse.in {
+    display: block!important;
+}
+@media (max-width: 992px) {
+    .navbar-collapse {
+        text-align: center;
+    }
+    .navComponent {
+        display: inline-block;
+    }
+}
+#tempoLogo {
+    width: 3em;
+    padding: 0;
+    margin: 0;
+}
+/* End Nav Bar */
+
 /* Player buttons */
 .control-button:before{
     font-family: HeydingsControlsRegular, sans-serif;
@@ -140,7 +159,7 @@ p {
 
 /* Now Playing Info */
 #playingInfo {
-    width: 300px;
+    width: 250px;
     height: 70px;
     margin-left: 20px;
     color: var(--light-text);

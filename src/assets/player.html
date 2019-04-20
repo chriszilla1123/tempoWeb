@@ -2,14 +2,14 @@
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
     <!-- Logo / Title Component -->
     <img class="navbar-brand home" id="tempoLogo" src="./tempo_logo.png">
-    <div class="navbar-brand home" id="tempoTitle">Tempo Web</div>
+    <!--<div class="navbar-brand home" id="tempoTitle">Tempo Web</div>-->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <!--Player Component -->
-      <ul class="navbar-nav">
+      <ul class="navbar-nav navComponent">
         <div id="controlHolder" class="container">
           <audio controls></audio>
           <div class="row">
@@ -28,7 +28,7 @@
         </div>
       </ul>
       <!-- "Now Playing" Component -->
-      <ul class="navbar-nav mr-2">
+      <ul class="navbar-nav navComponent mr-2">
         <div class="container" id="playingInfo">
           <div class="row" id="cur-song"></div>
           <div class="row" id="cur-album"></div>
@@ -36,13 +36,13 @@
         </div>
       </ul>
       <!-- Navigation Component (Artist, Album, Song) -->
-      <ul class="navbar-nav ml-auto">
+      <ul class="navbar-nav navComponent ml-auto">
         <button class="btn btn-outline-success" id="artistsButton">Artists</button>
         <button class="btn btn-outline-success ml-1" id="albumsButton">Albums</button>
         <button class="btn btn-outline-success ml-1" id="songsButton">Songs</button>
       </ul>
       <!-- Search Component -->
-      <ul class="navbar-nav ml-3">
+      <ul class="navbar-nav navComponent ml-3">
         <form class="form-inline" id="searchForm">
           <input class="form-control" type="text" placeholder="Search" id="searchBar">
           <button class="btn btn-outline-success" type="submit" id="searchButton">Search</button>
