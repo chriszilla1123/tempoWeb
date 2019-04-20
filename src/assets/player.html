@@ -1,21 +1,23 @@
 <div id="main-page">
-  <!-- Navber / Player -->
-  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+    <!-- Logo / Title Component -->
     <img class="navbar-brand home" id="tempoLogo" src="./tempo_logo.png">
     <div class="navbar-brand home" id="tempoTitle">Tempo Web</div>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
+      <!--Player Component -->
       <ul class="navbar-nav">
         <div id="controlHolder" class="container">
           <audio controls></audio>
           <div class="row">
             <div class="controls">
-                <button class="back control-button" data-icon="B" aria-label="rewind"></button>
-                <button class="play control-button" data-icon="P" aria-label="play pause toggle"></button>
-                <button class="stop control-button" data-icon="S" aria-label="stop"></button>
-                <button class="next control-button" data-icon="F" aria-label="fast forward"></button>
+              <button class="back control-button" data-icon="B" aria-label="rewind"></button>
+              <button class="play control-button" data-icon="P" aria-label="play pause toggle"></button>
+              <button class="stop control-button" data-icon="S" aria-label="stop"></button>
+              <button class="next control-button" data-icon="F" aria-label="fast forward"></button>
             </div>
           </div>
           <div class="row timer">
@@ -25,24 +27,37 @@
           </div>
         </div>
       </ul>
-      <ul class="navbar-nav">
-          <div class="container" id="playingInfo">
-            <div class="row" id="cur-song"></div>
-            <div class="row" id="cur-album"></div>
-            <div class="row" id="cur-artist"></div>
-          </div>
+      <!-- "Now Playing" Component -->
+      <ul class="navbar-nav mr-2">
+        <div class="container" id="playingInfo">
+          <div class="row" id="cur-song"></div>
+          <div class="row" id="cur-album"></div>
+          <div class="row" id="cur-artist"></div>
+        </div>
       </ul>
-      <ul class="navbar-nav">
+      <!-- Navigation Component (Artist) -->
+      <ul class="navbar-nav ml-auto">
+        <button class="btn btn-outline-success" id="artistsButton">Artists</button>
+        <button class="btn btn-outline-success ml-1" id="albumsButton">Albums</button>
+        <button class="btn btn-outline-success ml-1" id="songsButton">Songs</button>
+      </ul>
+      <!-- Search Component -->
+      <ul class="navbar-nav ml-3">
+        <form class="form-inline" id="searchForm">
+          <input class="form-control" type="text" placeholder="Search" id="searchBar">
+          <button class="btn btn-outline-success" type="submit" id="searchButton">Search</button>
+        </form>
+      </ul>
+    </div>
+  </nav>
+
+  <!--
+  <ul class="navbar-nav">
         <button>Artists</button>
         <button>Albums</button>
         <button>Songs</button>
       </ul>
-      <form class="form-inline mt-2 mt-md-0" id="searchForm">
-        <input class="form-control mr-sm-2" type="text" placeholder="Search" id="searchBar">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="searchButton">Search</button>
-      </form>
-    </div>
-  </nav>
+-->
   <!-- End Nav/Player -->
   <!--<h1 id="typeLable">Artists</h1>
   <div id="main"></div>-->

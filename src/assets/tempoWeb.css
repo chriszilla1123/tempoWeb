@@ -26,7 +26,7 @@ p {
     background-color: var(--dark-foreground);
     margin-top: 10px;
     border-style: solid;
-    border-width: 0px;
+    border-width: 0;
     border-color: var(--dark-foreground-border);
     font-size: .9em;
     text-align: left;
@@ -65,7 +65,9 @@ p {
     margin-top: 100px;
 }
 #tempoLogo {
-    width: 4em;
+    width: 3em;
+    padding: 0;
+    margin: 0;
 }
 #tempoTitle {
 
@@ -138,13 +140,13 @@ p {
 
 /* Now Playing Info */
 #playingInfo {
-    width: 400px;
+    width: 300px;
     height: 70px;
     margin-left: 20px;
     color: var(--light-text);
 }
 #cur-song, #cur-album, #cur-artist {
-    text-align: justify;
+    text-align: left;
     font-size: .9em;
 }
 /* End Now Playing Info */
@@ -152,7 +154,7 @@ p {
 /*Search Bar*/
 #searchForm{
     /*outer container*/
-    margin-left: 100px;
+    /*margin-left: 100px;*/
 }
 #searchBar{
     /*The text input for search*/
@@ -203,8 +205,7 @@ p {
     background-color: var(--dark-background);
     color: var(--light-text);
     margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    padding-top: 0px;
+    padding: 0 20px 20px;
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
 }
