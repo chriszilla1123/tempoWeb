@@ -58,7 +58,7 @@
       let tempo = this.tempo;
       let albumBrowser = this;
       let albumList = this.albumList;
-      typeLabel = this.typeLabel;
+      let typeLabel = this.typeLabel;
       let artistsDB = this.artistsDB;
       let albumsDB = this.albumsDB;
       let songsDB = this.songsDB;
