@@ -20,32 +20,6 @@ body {
 p {
     color: var(--light-text);
 }
-.artistLink, .albumLink {
-    border-style: solid;
-    border-color:  #666;
-    margin-top: 10px;
-    color: var(--light-text);
-  }
-.artistLink, #artistHeader, .artistAlbumControls {
-    color: var(--light-text);
-    background-color: var(--dark-foreground);
-    margin-top: 10px;
-    border-style: solid;
-    border-width: 0;
-    border-color: var(--dark-foreground-border);
-    font-size: .9em;
-    text-align: left;
-}
-.albumLink, #albumHeader {
-    color: var(--light-text);
-    background-color: var(--dark-foreground);
-    margin-top: 10px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: var(--dark-foreground-border);
-    font-size: .9em;
-    text-align: left;
-}
 .allSongs, .allAlbums {
     background-color: var(--dark-background);
 }
@@ -182,6 +156,49 @@ p {
     /*Submit button for search*/
 }
 /*End Search Bar*/
+
+/* Artist Browser */
+.artistLink {
+    color: var(--light-text);
+
+    margin-top: 10px;
+    border-style: solid;
+    border-width: 0;
+    border-color: var(--dark-foreground-border);
+    font-size: .9em;
+    text-align: left;
+}
+.artistBreak {
+    background-color: var(--light-divider);
+    height: 1px;
+    padding:1px;
+}
+/*End Artist Browser*/
+
+/* Album Browser */
+.albumHolder {
+    outline-style: solid;
+    outline-width: 1px;
+    outline-color: var(--light-divider);
+    text-align: center;
+}
+.albumLink {
+    color: var(--light-text);
+    margin-top: 10px;
+    border-style: solid;
+    border-width: 0px;
+    border-color: blue;
+    font-size: .9em;
+    text-align: center;
+}
+.albumArt {
+    width: 50%;
+    height: 50%;
+}
+.albumLabel {
+    font-size: 14pt;
+}
+/* End Album Browser */
 
 /* Song Browser */
 .songbreak {

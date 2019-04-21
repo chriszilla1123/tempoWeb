@@ -15,24 +15,23 @@
     methods: {
       writeArtists(artists, artistsDB, tempo) {
         /*Writes links and listeners for artists in the given set*/
+        let gridWidth = 2;
         let html = '<div class="container">';
-        html += '<div class="row" id="artistHeader"><div class="col-1"></div>'
-            + '<div class="col artistHeader">Artist</div><div class="col-1">Albums</div>'
-            + '<div class="col-1">Songs</div>'
-            + '<div class="col-1">Controls</div></div>';
+        html += '<div class="container" id="artistGrid">';
         for (let i = 0; i < artists.length; i++) {
           let artistID = artists[i];
           let index = artistID - 1;
           let onArtist = artistsDB[index].artist.toString();
-          let numAlbums = artistsDB[index].numAlbums.toString();
-          let numSongs = artistsDB[index].numSongs.toString();
-          html += '<div class="row artistLinkContainer" tag="ArID_' + artistID + '">'
-              + '<div class="col-1 artistLink" tag="ArID_' + artistID + '">' + (i + 1).toString() + '</div>'
-              + '<div class="col artistLink" tag="ArID_' + artistID + '">' + onArtist + '</div>'
-              + '<div class="col-1 artistLink" tag="ArID_' + artistID + '">' + numAlbums + '</div>'
-              + '<div class="col-1 artistLink" tag="ArID_' + artistID + '">' + numSongs + '</div>'
-              + '<div class="col-1 artistAlbumControls" tag="ArID_' + artistID + '" title="Play All">'
-              + '<i class="allSongsByArtist fas fa-play"></i> <i class="editArtist fas fa-cog"></i></div></div>';
+
+          if(i % gridWidth === 0){
+            html += '<div class="row">';
+          }
+          html += '<div class="col row artistLinkContainer" tag="ArID_' + artistID + '">'
+              + '<div class="col artistLink" tag="ArID_' + artistID + '">' + onArtist + '</div></div>';
+          if(i % gridWidth === gridWidth - 1 || i === artists.length - 1){
+            html += '</div>';
+            html += '<div class="row artistBreak"></div>';
+          }
         }
         html += '</div>';
         document.getElementById("artistBrowserContent").innerHTML = html;

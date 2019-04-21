@@ -14,11 +14,10 @@
     methods: {
       writeAlbums(albums, albumsDB, artistsDB, tempo){
         //Writes links and listeners for albums in the given set
+        let baseURL = "https://www.chrisco.top/api";
+        let gridWidth = 3;
         let html = '<div class="container">';
-        html += '<div class="row" id="albumHeader"><div class="col-1"></div>'
-            + '<div class="col">Album</div><div class="col">Artist</div>'
-            + '<div class="col-1">Songs</div>'
-            + '<div class="col-1">Controls</div></div>';
+
         for(let i=0; i < albums.length; i++){
           let albumID = albums[i];
           let index = albumID - 1;
@@ -26,14 +25,27 @@
           let artistID = albumsDB[index].artist;
           let artistName = artistsDB[artistID - 1].artist;
           let numSongs = albumsDB[index].numSongs.toString();
+          let artUrl = baseURL + "/getAlbumArtById/" + albumID.toString();
 
+          if(i % gridWidth === 0){
+            html += '<div class="row">';
+          }
+          html += '<div class="col albumHolder">'
+              + '<div class="container albumLink" tag="AlID_' + albumID + '">'
+              + '<div class="row d-flex justify-content-center" tag="AlId_' + albumID + '"</div>'
+              + '<img class="row albumArt" alt="albumArtwork" src="' + artUrl + '" tag="AlID_' + albumID + '">'
+              + '</div>'
+              + '<div class="row albumLabel albumLink d-flex justify-content-center" tag="AlID_' + albumID + '">' + albumName + '</div>'
+              + '</div></div>';
+          if(i === albums.length - 1){
+            for(let n = i % gridWidth; n < gridWidth - 1; n++){
+              html += '<div class="col"></div>'
+            }
+          }
+          if(i % gridWidth === gridWidth - 1){
+            html += '</div>';
+          }
 
-          html += '<div class="row albumLink" tag="AlID_' + albumID + '">'
-              + '<div class="col-1">' + (i+1).toString() + '</div>'
-              + '<div class="col">' + albumName + '</div>'
-              + '<div class="col">' + artistName + '</div>'
-              + '<div class="col-1">' + numSongs + '</div>'
-              + '<i class="AllSongsByArtist fas fa-play col-1"></i></div>';
         }
         html += '</div>';
         document.getElementById("albumBrowserContent").innerHTML = html;
