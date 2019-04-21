@@ -108,17 +108,14 @@
         document.getElementById('cur-artist').innerHTML = artist;
       },
       //Player functions
-      control_play(play_button) {
+      control_play() {
         if (audioPlayer.paused) {
-          play_button.setAttribute('data-icon', 'u');
           audioPlayer.play();
         } else {
-          play_button.setAttribute('data-icon', 'P');
           audioPlayer.pause();
         }
       },
-      control_stop(play_button) {
-        play_button.setAttribute('data-icon', 'P');
+      control_stop() {
         audioPlayer.pause();
         audioPlayer.currentTime = 0;
       },
@@ -150,6 +147,15 @@
           let toPlay = songSet[songSetIndex - 1];
           this.playSongById(toPlay);
           curSong = parseInt(toPlay);
+        }
+      },
+      updatePlayPauseButton(){
+        let play_button = document.querySelector('.play');
+        if(audioPlayer.paused){
+          play_button.setAttribute('data-icon', 'P');
+        }
+        else{
+          play_button.setAttribute('data-icon', 'u');
         }
       },
       updatePlayerTime(timeHolder, timeBar, timer, timeEnd) {
@@ -407,10 +413,10 @@
       controller.style.visibility = 'visible';
 
       controller_play.addEventListener('click', function () {
-        tempo.control_play(controller_play);
+        tempo.control_play();
       });
       controller_stop.addEventListener('click', function () {
-        tempo.control_stop(controller_play);
+        tempo.control_stop();
       });
       controller_next.addEventListener('click', function () {
         tempo.control_next();
@@ -420,6 +426,12 @@
       });
       audioPlayer.addEventListener('timeupdate', function () {
         tempo.updatePlayerTime(timerHolder, timerBar, timer, timeEnd);
+      });
+      audioPlayer.addEventListener('play', function () {
+        tempo.updatePlayPauseButton();
+      });
+      audioPlayer.addEventListener('pause', function () {
+        tempo.updatePlayPauseButton();
       });
 
       let barLoc = timerHolder.getBoundingClientRect();
