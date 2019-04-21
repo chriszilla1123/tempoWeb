@@ -188,6 +188,32 @@
         timeEnd.textContent = endMin.toString() + ':' + endSec.toString();
       },
       //End player functions
+      //Search
+      searchAll(input){
+        document.getElementById('typeLabel').innerHTML = "Search Results for " + input;
+        let jsonRequest = {};
+        jsonRequest['all'] = input;
+        jsonRequest = JSON.stringify(jsonRequest);
+        this.$http.post(baseURL + "/search", jsonRequest).then(response => {
+          let artists = this.getIdsFromObjects(response.body[0][0]);
+          let albums = this.getIdsFromObjects(response.body[1][0]);
+          let songs = this.getIdsFromObjects(response.body[2][0]);
+          this.openSearchBrowser({artistList: artists, albumList: albums, songList: songs, searchTerm: input});
+        }, response => {  });
+      },
+      getIdsFromObjects(objects){
+        //Search Helper, converts the Artist/Album/Song object arrays into integer ID arrays
+        let list = [];
+        if(Array.isArray(objects)){
+          objects.forEach(function (element) {
+            if(element.hasOwnProperty('id')){
+              list.push(element.id);
+            }
+          });
+        }
+        return list;
+      },
+      //End Search
       //Helper functions
       getDBTables(cb) {
         /*Gets the contents of the 'artists', 'albums', and 'songs' tables
@@ -271,9 +297,23 @@
         });
         window.history.replaceState([], "/", "/"); //Updates URL
       },
-      openSongBrowser(songList, showAll = false, typeLabel = undefined){
-        if(showAll === true){
+      openSongBrowser(options){ //Supported options: {songList: Array, showAll: Boolean, label: String}
+        let songList;
+        let typeLabel = undefined;
+        if(options.hasOwnProperty('showAll') && options.showAll === true){
           songList = this.arrayBuilder(1, songsDB.length + 1);
+          typeLabel = "All Songs";
+        }
+        else if(options.hasOwnProperty('songList')){
+          songList = options.songList; //Must be an array of integers.
+        }
+        else {
+          songList = this.arrayBuilder(1, songsDB.length + 1);
+          typeLabel = "All Songs";
+        }
+
+        if(options.hasOwnProperty('label')){
+          typeLabel = options.label; //Must be a string
         }
         this.$router.push({
           name: 'songBrowser',
@@ -288,6 +328,45 @@
         });
         window.history.replaceState([], "/", "/"); //updates URL
       },
+      openSearchBrowser(options){ //Required options: {artistList: Array, albumList: Array, songList: Array}
+                                  //Supported options: {searchTerm: String}
+        let artistList, albumList, songList;
+        let searchTerm = undefined;
+
+        if(options.hasOwnProperty('artistList')){
+          artistList = options.artistList;
+        }
+        else { artistList = []; }
+
+        if(options.hasOwnProperty('albumList')){
+          albumList = options.albumList;
+        }
+        else{ artistList = []; }
+
+        if(options.hasOwnProperty('songList')){
+          songList = options.songList;
+        }
+        else { songList = []; }
+
+        if(options.hasOwnProperty('searchTerm')){
+          searchTerm = options.searchTerm;
+        }
+
+        this.$router.push({
+          name: 'searchBrowser',
+          params: {
+            tempo: this,
+            artistList: artistList,
+            albumList: albumList,
+            songList: songList,
+            artistsDB: artistsDB,
+            albumsDB: albumsDB,
+            songsDB: songsDB,
+            searchTerm: searchTerm,
+          }
+        });
+        window.history.replaceState([], "/", "/"); //updates URL
+      },
       //End routing functions
 
       //Connect DB functions, see databaseFunctions.js for implementation and comments.
@@ -297,7 +376,6 @@
     },
     mounted: function () {
       //This function is ran after the page is loaded
-      console.log("Page loaded");
       let tempo = this;
       tempo.getDBTables(function () {
         //Start the artistBrowser by default
@@ -358,6 +436,35 @@
         }
       };
       //End Player
+
+      //Nav Buttons
+      let artistsButton = document.getElementById('artistsButton');
+      let albumsButton = document.getElementById('albumsButton');
+      let songsButton = document.getElementById('songsButton');
+
+      artistsButton.addEventListener('click', function() {
+        tempo.openArtistBrowser({showAll: true});
+      });
+      albumsButton.addEventListener('click', function() {
+        tempo.openAlbumBrowser({showAll: true});
+      });
+      songsButton.addEventListener('click', function() {
+        tempo.openSongBrowser({showAll: true});
+      });
+      //End Nav Buttons
+
+      //Search bar
+      let searchBar = document.querySelector('#searchBar');
+      document.addEventListener('submit', function(e){
+        e.preventDefault();
+        let input = searchBar.value;
+        tempo.searchAll(input);
+      });
+      searchBar.addEventListener('input', function(){
+        let input = searchBar.value;
+        //tempo.searchAll(input);
+      });
+      //End Search Bar
     }
   }
 </script>

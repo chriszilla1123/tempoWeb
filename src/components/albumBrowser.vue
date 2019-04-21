@@ -60,7 +60,9 @@
           albumLink.addEventListener('click', function(){
             let albumID = this.attributes.tag.nodeValue.split('AlID_')[1];
             let songList = tempo.getSongIDsByAlbumID(albumID);
-            tempo.openSongBrowser(songList);
+            console.log("Getting all songs in album: " + albumID);
+            console.log(songList);
+            tempo.openSongBrowser({songList: songList});
           })
         }
       },
