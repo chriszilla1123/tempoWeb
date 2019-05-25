@@ -6,10 +6,18 @@
 <template src="../assets/player.html"></template>
 
 <script>
+  //Set the base URL here. This will be the base URL for all API calls.
+  //Example: http://example.com:8000 || https://example.com/api , etc
+  //If your web server supports it, HTTPS is always preferred!
+  //Default baseURL: https://www.chilltec.net/api
+
+  let baseURL = "https://www.chilltec.net/api";
+
+  // END CONFIGURATION VARIABLES //
+
   import dbf from "../assets/databaseFunctions";
 
   let audioPlayer = new Audio();
-  let baseURL = "https://www.chrisco.top/api";
   let songSet = []; /*List of songs in the current playing set*/
   let curSong = -1; /*ID of the currently playing song*/
   let nextSong = -1; /*ID of next song to be played from the current playing set*/
