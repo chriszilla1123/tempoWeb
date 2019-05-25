@@ -15,7 +15,7 @@ Tempo Web uses Bootstrap and CSS3 media queries to provide a responsive experien
 
 Requires Tempo Server for the hosting of your music and media. [TempoServer on GitHub](https://github.com/chriszilla1123/tempoServer)
 
-Have an Android device? Try [Tempo Android](https://github.com/chriszilla1123/tempoAndroid) for offline access on the go. Coming soon to Google Play.
+Have an Android device? Try [Tempo Android](https://github.com/chriszilla1123/tempoAndroid) for offline access on the go. [Download now on Google Play](https://play.google.com/store/apps/details?id=net.chilltec.tempo)
 
 
 Installation
@@ -34,7 +34,7 @@ Requirements
 * A web server. The following have been tested.
 	* [Apache](https://www.apache.org/) **[Recommended]**
 	* [NGINX](https://www.nginx.com/)
-	* [Lighttpd](https://www.lighttpd.net/)
+	* [Lighttpd](https://www.lighttpd.net/
 * [Tempo Server](https://github.com/chriszilla1123/tempoServer) - The companion server for media hosting.
 
 Recommendations
